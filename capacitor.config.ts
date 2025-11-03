@@ -3,12 +3,12 @@ import { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'com.unicart.app',
   appName: 'UniCart',
-  webDir: 'public',
+  webDir: '.next',
   server: {
     // For production: Point to your Vercel deployment URL
     // Replace 'your-app.vercel.app' with your actual Vercel URL
     // For development: Comment out server config and use local dev server
-    // url: 'https://your-app.vercel.app',  // Uncomment after deploying to Vercel and replace with your URL
+     url: 'https://unicart-cursor-pro.vercel.app',
     cleartext: false,
     androidScheme: 'https',
     iosScheme: 'https',
