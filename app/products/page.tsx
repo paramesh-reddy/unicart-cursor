@@ -49,23 +49,43 @@ export default function ProductsPage() {
         ]);
 
         if (productsResponse.ok) {
-          const productsData = await productsResponse.json();
-          if (productsData.success) {
-            setProducts(productsData.products);
+          const productsResponseData = await productsResponse.json();
+          if (productsResponseData.success && productsResponseData.products && Array.isArray(productsResponseData.products)) {
+            setProducts(productsResponseData.products);
+          } else {
+            // Fallback to static data if API response is invalid
+            console.warn('Invalid products response, using fallback data');
+            const fallbackProducts = Array.isArray(productsData) ? productsData : (productsData as unknown as Product[]);
+            setProducts(Array.isArray(fallbackProducts) ? fallbackProducts : []);
           }
+        } else {
+          // API returned error, use fallback
+          console.warn('Products API error, using fallback data');
+          const fallbackProducts = Array.isArray(productsData) ? productsData : (productsData as unknown as Product[]);
+          setProducts(Array.isArray(fallbackProducts) ? fallbackProducts : []);
         }
 
         if (categoriesResponse.ok) {
-          const categoriesData = await categoriesResponse.json();
-          if (categoriesData.success) {
-            setCategories(categoriesData.categories);
+          const categoriesResponseData = await categoriesResponse.json();
+          if (categoriesResponseData.success && categoriesResponseData.categories && Array.isArray(categoriesResponseData.categories)) {
+            setCategories(categoriesResponseData.categories);
+          } else {
+            // Fallback to static data if API response is invalid
+            console.warn('Invalid categories response, using fallback data');
+            setCategories(categoriesData as unknown as Category[]);
           }
+        } else {
+          // API returned error, use fallback
+          console.warn('Categories API error, using fallback data');
+          setCategories(categoriesData as unknown as Category[]);
         }
       } catch (error) {
         console.error('Failed to fetch data:', error);
         // Fallback to static data
-        setProducts(productsData as unknown as Product[]);
-        setCategories(categoriesData as unknown as Category[]);
+        const fallbackProducts = Array.isArray(productsData) ? productsData : (productsData as unknown as Product[]);
+        const fallbackCategories = Array.isArray(categoriesData) ? categoriesData : (categoriesData as unknown as Category[]);
+        setProducts(Array.isArray(fallbackProducts) ? fallbackProducts : []);
+        setCategories(Array.isArray(fallbackCategories) ? fallbackCategories : []);
       } finally {
         setIsLoading(false);
       }
@@ -84,12 +104,15 @@ export default function ProductsPage() {
 
   // Get unique brands
   const brands = useMemo(() => {
-    return Array.from(new Set(products.map((p) => p.brand).filter(Boolean))) as string[];
+    const safeProducts = Array.isArray(products) ? products : [];
+    return Array.from(new Set(safeProducts.map((p) => p.brand).filter(Boolean))) as string[];
   }, [products]);
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {
-    let filtered = [...products];
+    // Ensure products is always an array
+    const safeProducts = Array.isArray(products) ? products : [];
+    let filtered = [...safeProducts];
 
     // Apply search filter first
     if (searchQuery.trim()) {
@@ -147,7 +170,7 @@ export default function ProductsPage() {
     }
 
     return filtered;
-  }, [products, selectedCategories, priceRange, selectedBrands, selectedRating, sortBy]);
+  }, [products, selectedCategories, priceRange, selectedBrands, selectedRating, sortBy, searchQuery, searchProducts]);
 
   // Handle category toggle
   const toggleCategory = (categoryId: string) => {
@@ -341,7 +364,7 @@ export default function ProductsPage() {
                   ) : (
                     <p className="text-sm text-gray-600">
                       Showing <span className="font-medium text-gray-900">{filteredProducts.length}</span> of{" "}
-                      <span className="font-medium text-gray-900">{products.length}</span> results
+                      <span className="font-medium text-gray-900">{Array.isArray(products) ? products.length : 0}</span> results
                     </p>
                   )}
                 </div>

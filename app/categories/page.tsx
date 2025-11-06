@@ -28,25 +28,47 @@ export default function CategoriesPage() {
         // Fetch categories from API
         const categoriesResponse = await fetch('/api/categories');
         if (categoriesResponse.ok) {
-          const categoriesData = await categoriesResponse.json();
-          if (categoriesData.success) {
-            setCategories(categoriesData.categories);
+          const categoriesResponseData = await categoriesResponse.json();
+          if (categoriesResponseData.success && categoriesResponseData.categories && Array.isArray(categoriesResponseData.categories)) {
+            setCategories(categoriesResponseData.categories);
+          } else {
+            // Fallback to static data if API response is invalid
+            console.warn('Invalid categories response, using fallback data');
+            const fallbackCategories = Array.isArray(categoriesData) ? categoriesData : (categoriesData as unknown as Category[]);
+            setCategories(Array.isArray(fallbackCategories) ? fallbackCategories : []);
           }
+        } else {
+          // API returned error, use fallback
+          console.warn('Categories API error, using fallback data');
+          const fallbackCategories = Array.isArray(categoriesData) ? categoriesData : (categoriesData as unknown as Category[]);
+          setCategories(Array.isArray(fallbackCategories) ? fallbackCategories : []);
         }
 
-        // Fetch products from API
-        const productsResponse = await fetch('/api/products');
+        // Fetch ALL products from API (use a high limit to get all products)
+        const productsResponse = await fetch('/api/products?limit=1000');
         if (productsResponse.ok) {
-          const productsData = await productsResponse.json();
-          if (productsData.success) {
-            setProducts(productsData.products);
+          const productsResponseData = await productsResponse.json();
+          if (productsResponseData.success && productsResponseData.products && Array.isArray(productsResponseData.products)) {
+            setProducts(productsResponseData.products);
+          } else {
+            // Fallback to static data if API response is invalid
+            console.warn('Invalid products response, using fallback data');
+            const fallbackProducts = Array.isArray(productsData) ? productsData : (productsData as unknown as Product[]);
+            setProducts(Array.isArray(fallbackProducts) ? fallbackProducts : []);
           }
+        } else {
+          // API returned error, use fallback
+          console.warn('Products API error, using fallback data');
+          const fallbackProducts = Array.isArray(productsData) ? productsData : (productsData as unknown as Product[]);
+          setProducts(Array.isArray(fallbackProducts) ? fallbackProducts : []);
         }
       } catch (error) {
         console.error('Failed to fetch data:', error);
         // Fallback to static data
-        setCategories(categoriesData as unknown as Category[]);
-        setProducts(productsData as unknown as Product[]);
+        const fallbackCategories = Array.isArray(categoriesData) ? categoriesData : (categoriesData as unknown as Category[]);
+        const fallbackProducts = Array.isArray(productsData) ? productsData : (productsData as unknown as Product[]);
+        setCategories(Array.isArray(fallbackCategories) ? fallbackCategories : []);
+        setProducts(Array.isArray(fallbackProducts) ? fallbackProducts : []);
       }
     };
 
@@ -54,7 +76,7 @@ export default function CategoriesPage() {
   }, []);
 
   // Filter products by category and search
-  const filteredProducts = products.filter((product) => {
+  const filteredProducts = (Array.isArray(products) ? products : []).filter((product) => {
     const matchesCategory = !selectedCategory || product.categoryId === selectedCategory;
     const matchesSearch = !searchQuery || 
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -68,7 +90,8 @@ export default function CategoriesPage() {
   };
 
   const getCategoryProductCount = (categoryId: string) => {
-    return products.filter(p => p.categoryId === categoryId).length;
+    const safeProducts = Array.isArray(products) ? products : [];
+    return safeProducts.filter(p => p.categoryId === categoryId).length;
   };
 
   return (
@@ -98,12 +121,12 @@ export default function CategoriesPage() {
                   <div className="flex items-center justify-between">
                     <span>All Categories</span>
                     <span className="text-sm text-gray-500">
-                      {products.length}
+                      {Array.isArray(products) ? products.length : 0}
                     </span>
                   </div>
                 </button>
                 
-                {categories.map((category) => {
+                {Array.isArray(categories) && categories.map((category) => {
                   const productCount = getCategoryProductCount(category.id);
                   return (
                     <button

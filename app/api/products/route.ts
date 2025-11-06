@@ -11,7 +11,8 @@ const productQuerySchema = z.object({
   minPrice: z.string().optional(),
   maxPrice: z.string().optional(),
   brand: z.string().optional(),
-  rating: z.string().optional()
+  rating: z.string().optional(),
+  featured: z.string().optional()
 })
 
 // GET /api/products - Get products with filtering and pagination
@@ -19,15 +20,20 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const params = Object.fromEntries(searchParams.entries())
-    const { page, limit, category, search, sort, minPrice, maxPrice, brand, rating } = productQuerySchema.parse(params)
+    const { page, limit, category, search, sort, minPrice, maxPrice, brand, rating, featured } = productQuerySchema.parse(params)
 
     const pageNum = parseInt(page)
-    const limitNum = parseInt(limit)
+    // Allow fetching all products by setting a very high limit if limit is 0 or very large
+    const limitNum = parseInt(limit) > 10000 ? 10000 : parseInt(limit)
     const skip = (pageNum - 1) * limitNum
 
     // Build where clause
     const where: any = {
       isActive: true
+    }
+
+    if (featured === 'true') {
+      where.isFeatured = true
     }
 
     if (category) {
@@ -103,10 +109,10 @@ export async function GET(request: NextRequest) {
     ])
 
     // Calculate average ratings
-    const productsWithRatings = products.map(product => {
+    const productsWithRatings = products.map((product: typeof products[0]) => {
       const reviews = product.reviews
       const averageRating = reviews.length > 0 
-        ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
+        ? reviews.reduce((sum: number, review: typeof reviews[0]) => sum + review.rating, 0) / reviews.length 
         : 0
 
       return {

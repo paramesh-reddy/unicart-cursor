@@ -31,23 +31,43 @@ export default function HomePage() {
         ]);
 
         if (productsResponse.ok) {
-          const productsData = await productsResponse.json();
-          if (productsData.success) {
-            setFeaturedProducts(productsData.products);
+          const productsResponseData = await productsResponse.json();
+          if (productsResponseData.success && productsResponseData.products && Array.isArray(productsResponseData.products)) {
+            setFeaturedProducts(productsResponseData.products);
+          } else {
+            // Fallback to static data if API response is invalid
+            console.warn('Invalid products response, using fallback data');
+            const fallbackProducts = Array.isArray(productsData) ? productsData : (productsData as unknown as Product[]);
+            setFeaturedProducts(Array.isArray(fallbackProducts) ? fallbackProducts.slice(0, 6) : []);
           }
+        } else {
+          // API returned error, use fallback
+          console.warn('Products API error, using fallback data');
+          const fallbackProducts = Array.isArray(productsData) ? productsData : (productsData as unknown as Product[]);
+          setFeaturedProducts(Array.isArray(fallbackProducts) ? fallbackProducts.slice(0, 6) : []);
         }
 
         if (categoriesResponse.ok) {
-          const categoriesData = await categoriesResponse.json();
-          if (categoriesData.success) {
-            setCategories(categoriesData.categories);
+          const categoriesResponseData = await categoriesResponse.json();
+          if (categoriesResponseData.success && categoriesResponseData.categories && Array.isArray(categoriesResponseData.categories)) {
+            setCategories(categoriesResponseData.categories);
+          } else {
+            // Fallback to static data if API response is invalid
+            console.warn('Invalid categories response, using fallback data');
+            setCategories(categoriesData as unknown as any[]);
           }
+        } else {
+          // API returned error, use fallback
+          console.warn('Categories API error, using fallback data');
+          setCategories(categoriesData as unknown as any[]);
         }
       } catch (error) {
         console.error('Failed to fetch data:', error);
         // Fallback to static data
-        setFeaturedProducts((productsData as unknown as Product[]).slice(0, 6));
-        setCategories(categoriesData as unknown as any[]);
+        const fallbackProducts = Array.isArray(productsData) ? productsData : (productsData as unknown as Product[]);
+        const fallbackCategories = Array.isArray(categoriesData) ? categoriesData : (categoriesData as unknown as any[]);
+        setFeaturedProducts(Array.isArray(fallbackProducts) ? fallbackProducts.slice(0, 6) : []);
+        setCategories(Array.isArray(fallbackCategories) ? fallbackCategories : []);
       } finally {
         setIsLoading(false);
       }
