@@ -3,6 +3,8 @@ import { withAuth, AuthenticatedRequest } from '@/lib/middleware'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic'
+
 const addToCartSchema = z.object({
   productId: z.string().min(1, 'Product ID is required'),
   quantity: z.number().min(1, 'Quantity must be at least 1').max(100, 'Quantity cannot exceed 100')

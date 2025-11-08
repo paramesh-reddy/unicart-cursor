@@ -26,12 +26,7 @@ android {
 
 repositories {
     flatDir{
-        def libDirs = ['libs']
-        def cordovaLibsDir = file('../capacitor-cordova-android-plugins/src/main/libs')
-        if (cordovaLibsDir.exists()) {
-            libDirs << cordovaLibsDir.absolutePath
-        }
-        dirs libDirs
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
     }
 }
 
@@ -44,10 +39,7 @@ dependencies {
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
-    def cordovaPluginsProject = findProject(':capacitor-cordova-android-plugins')
-    if (cordovaPluginsProject != null) {
-        implementation project(':capacitor-cordova-android-plugins')
-    }
+    implementation project(':capacitor-cordova-android-plugins')
 }
 
 apply from: 'capacitor.build.gradle'

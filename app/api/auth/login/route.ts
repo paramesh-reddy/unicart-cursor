@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma'
 import { hashPassword, verifyPassword, generateToken } from '@/lib/auth'
 import { z } from 'zod'
 
+export const dynamic = 'force-dynamic'
+
 // Validation schemas
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
