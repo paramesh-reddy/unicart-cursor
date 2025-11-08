@@ -53,10 +53,10 @@ export async function GET(request: NextRequest) {
       })
 
       // Calculate ratings for each product
-      const itemsWithRatings = wishlistItems.map(item => {
+      const itemsWithRatings = wishlistItems.map((item: typeof wishlistItems[0]) => {
         const reviews = item.product.reviews
         const averageRating = reviews.length > 0 
-          ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
+          ? reviews.reduce((sum: number, review: typeof reviews[0]) => sum + review.rating, 0) / reviews.length 
           : 0
 
         return {
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Check if product exists
-      const product = await prisma.product.findUnique({
+      const product = await prisma.product.findFirst({
         where: { id: productId, isActive: true },
         select: { id: true }
       })

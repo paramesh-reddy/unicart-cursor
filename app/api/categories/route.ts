@@ -24,10 +24,10 @@ export async function GET(request: NextRequest) {
     })
 
     // Format categories with product counts
-    const formattedCategories = categories.map(category => ({
+    const formattedCategories = categories.map((category: typeof categories[0]) => ({
       ...category,
       productCount: category._count.products,
-      children: category.children.map(child => ({
+      children: category.children.map((child: typeof category.children[0]) => ({
         ...child,
         productCount: child._count.products,
         _count: undefined

@@ -56,11 +56,11 @@ export async function GET(request: NextRequest) {
       })
 
       // Calculate totals
-      const subtotal = cartItems.reduce((sum, item) => {
+      const subtotal = cartItems.reduce((sum: number, item: typeof cartItems[0]) => {
         const price = typeof item.price === 'number' ? item.price : Number(item.price)
         return sum + (price * item.quantity)
       }, 0)
-      const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0)
+      const itemCount = cartItems.reduce((sum: number, item: typeof cartItems[0]) => sum + item.quantity, 0)
 
       return NextResponse.json({
         success: true,
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
       const { productId, quantity } = addToCartSchema.parse(body)
 
       // Get product details
-      const product = await prisma.product.findUnique({
+      const product = await prisma.product.findFirst({
         where: { id: productId, isActive: true },
         select: { id: true, price: true, stockQuantity: true, trackQuantity: true }
       })

@@ -1,18 +1,27 @@
-import { CapacitorConfig } from '@capacitor/cli';
+import { CapacitorConfig } from '@capacitor/cli'
+
+const serverUrl = process.env.CAP_SERVER_URL
+
+const isHttp = serverUrl?.startsWith('http://') ?? false
 
 const config: CapacitorConfig = {
   appId: 'com.unicart.app',
   appName: 'UniCart',
   webDir: '.next',
-  server: {
-    // For production: Point to your Vercel deployment URL
-    // Replace 'your-app.vercel.app' with your actual Vercel URL
-    // For development: Comment out server config and use local dev server
-     url: 'https://unicart-cursor-pro.vercel.app',
-    cleartext: false,
-    androidScheme: 'https',
-    iosScheme: 'https',
-  },
+  server: serverUrl
+    ? {
+        url: serverUrl,
+        cleartext: isHttp,
+        androidScheme: isHttp ? 'http' : 'https',
+        iosScheme: isHttp ? 'http' : 'https'
+      }
+    : {
+        // Default to production deployment URL when no override is provided
+        url: 'https://unicart-cursor.vercel.app',
+        cleartext: false,
+        androidScheme: 'https',
+        iosScheme: 'https'
+      },
   plugins: {
     SplashScreen: {
       launchShowDuration: 2000,

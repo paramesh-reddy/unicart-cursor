@@ -53,7 +53,7 @@ export async function GET(
     // Calculate average rating
     const reviews = product.reviews
     const averageRating = reviews.length > 0 
-      ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
+      ? reviews.reduce((sum: number, review: typeof reviews[0]) => sum + review.rating, 0) / reviews.length 
       : 0
 
     const productWithRating = {
@@ -62,7 +62,7 @@ export async function GET(
         average: Math.round(averageRating * 10) / 10,
         count: product._count.reviews
       },
-      reviews: reviews.map(review => ({
+      reviews: reviews.map((review: typeof reviews[0]) => ({
         ...review,
         user: {
           name: `${review.user.firstName || ''} ${review.user.lastName || ''}`.trim() || 'Anonymous'

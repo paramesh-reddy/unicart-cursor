@@ -14,6 +14,12 @@ export function middleware(request: NextRequest) {
   // For now, we'll rely on client-side protection in the actual pages
   // This middleware serves as an additional layer
   
+  // Check if accessing protected routes (will be implemented with auth check)
+  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+  const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
+  
+  // TODO: Add authentication check and redirect logic
+  
   return NextResponse.next();
 }
 
