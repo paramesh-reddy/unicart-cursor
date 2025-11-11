@@ -50,7 +50,7 @@ export async function GET(
     if (!product) {
       const fallbackProducts = Array.isArray(productsData) ? productsData : []
       const fallbackCategories = Array.isArray(categoriesData) ? categoriesData : []
-      const fallbackProduct: any = fallbackProducts.find(
+      const fallbackProduct = (fallbackProducts as Array<Record<string, any>>).find(
         (item: any) => item.id === id || item.slug === id
       )
 
@@ -61,14 +61,16 @@ export async function GET(
         )
       }
 
-      const fallbackCategory = fallbackCategories.find(
+      const fallbackCategory = (fallbackCategories as Array<Record<string, any>>).find(
         (category: any) => category.id === fallbackProduct.categoryId
       )
+
+      const fallbackProductAny = fallbackProduct as Record<string, any>
 
       return NextResponse.json({
         success: true,
         product: {
-          ...fallbackProduct,
+          ...fallbackProductAny,
           category: fallbackCategory
             ? {
                 id: fallbackCategory.id,
@@ -76,9 +78,9 @@ export async function GET(
                 slug: fallbackCategory.slug
               }
             : undefined,
-          images: Array.isArray(fallbackProduct.images) ? fallbackProduct.images : [],
-          variants: Array.isArray(fallbackProduct.variants) ? fallbackProduct.variants : [],
-          rating: fallbackProduct.rating ?? { average: 0, count: 0 },
+          images: Array.isArray(fallbackProductAny.images) ? fallbackProductAny.images : [],
+          variants: Array.isArray(fallbackProductAny.variants) ? fallbackProductAny.variants : [],
+          rating: fallbackProductAny.rating ?? { average: 0, count: 0 },
           reviews: []
         }
       })
