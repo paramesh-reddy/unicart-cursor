@@ -165,6 +165,38 @@ npm run db:seed
 
 For detailed deployment instructions, see [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md)
 
+## 📱 Building the Android App (Capacitor)
+
+Follow these steps once your APIs are working:
+
+1. **Set environment variables**
+
+   Make sure `NEXT_PUBLIC_API_URL` points to your deployed API (for example `https://unicart-cursor5.vercel.app`). Update `.env` (or `.env.production`) and run `npx cap sync` so Capacitor gets the new values.
+
+2. **Build the web assets**
+
+   ```bash
+   npm run build
+   ```
+
+3. **Sync Capacitor**
+
+   ```bash
+   npx cap sync android
+   ```
+
+4. **Build the Android APK**
+
+   ```bash
+   cd android
+   ./gradlew assembleDebug   # use assembleRelease for a release build
+   ```
+
+5. **Install and test**
+
+   The APK is generated in `android/app/build/outputs/apk/`. Install it on a device or emulator and verify login/register flows against your deployed API.
+
+
 ## 📖 Documentation
 
 - **[VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md)** - Complete deployment guide
