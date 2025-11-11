@@ -11,26 +11,39 @@ import { formatPrice } from "@/lib/utils";
 import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
 import type { CartItem } from "@/types";
 
+const REQUIRE_AUTH =
+  process.env.NEXT_PUBLIC_REQUIRE_AUTH === "true";
+
 export default function CartPage() {
   const [promoCode, setPromoCode] = useState("");
   const [promoApplied, setPromoApplied] = useState(false);
   const [items, setItems] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const buildAuthHeaders = (shouldAlert = false) => {
+    if (typeof window === "undefined") return {};
+    const token = localStorage.getItem('auth_token');
+    if (REQUIRE_AUTH && !token) {
+      if (shouldAlert) {
+        alert("Please login to manage your cart.");
+      }
+      return null;
+    }
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
+  };
+
   // Fetch cart data from API
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const token = localStorage.getItem('auth_token');
-        if (!token) {
+        const authHeaders = buildAuthHeaders();
+        if (authHeaders === null) {
           setIsLoading(false);
           return;
         }
 
         const response = await fetch('/api/cart', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          headers: authHeaders
         });
 
         if (response.ok) {
@@ -62,13 +75,13 @@ export default function CartPage() {
   // Handle quantity increment
   const handleIncrement = async (itemId: string, currentQuantity: number) => {
     try {
-      const token = localStorage.getItem('auth_token');
-      if (!token) return;
+      const authHeaders = buildAuthHeaders(true);
+      if (authHeaders === null) return;
 
       const response = await fetch(`/api/cart/${itemId}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          ...authHeaders,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ quantity: currentQuantity + 1 })
@@ -77,7 +90,7 @@ export default function CartPage() {
       if (response.ok) {
         // Refresh cart data
         const cartResponse = await fetch('/api/cart', {
-          headers: { 'Authorization': `Bearer ${token}` }
+          headers: authHeaders
         });
         if (cartResponse.ok) {
           const data = await cartResponse.json();
@@ -98,13 +111,13 @@ export default function CartPage() {
     if (currentQuantity <= 1) return;
 
     try {
-      const token = localStorage.getItem('auth_token');
-      if (!token) return;
+      const authHeaders = buildAuthHeaders(true);
+      if (authHeaders === null) return;
 
       const response = await fetch(`/api/cart/${itemId}`, {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          ...authHeaders,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ quantity: currentQuantity - 1 })
@@ -113,7 +126,7 @@ export default function CartPage() {
       if (response.ok) {
         // Refresh cart data
         const cartResponse = await fetch('/api/cart', {
-          headers: { 'Authorization': `Bearer ${token}` }
+          headers: authHeaders
         });
         if (cartResponse.ok) {
           const data = await cartResponse.json();
@@ -134,14 +147,12 @@ export default function CartPage() {
     if (!confirm("Remove this item from cart?")) return;
 
     try {
-      const token = localStorage.getItem('auth_token');
-      if (!token) return;
+      const authHeaders = buildAuthHeaders(true);
+      if (authHeaders === null) return;
 
       const response = await fetch(`/api/cart/${itemId}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers: authHeaders
       });
 
       if (response.ok) {
@@ -158,16 +169,14 @@ export default function CartPage() {
     if (!confirm("Are you sure you want to clear your cart?")) return;
 
     try {
-      const token = localStorage.getItem('auth_token');
-      if (!token) return;
-
       // Remove all items one by one
       for (const item of items) {
+        const authHeaders = buildAuthHeaders(true);
+        if (authHeaders === null) return;
+
         await fetch(`/api/cart/${item.productId}`, {
           method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          headers: authHeaders
         });
       }
 

@@ -7,6 +7,9 @@ import { Badge } from "@/components/ui/Badge";
 import { formatPrice, calculateDiscount } from "@/lib/utils";
 import type { Product } from "@/types";
 
+const REQUIRE_AUTH =
+  process.env.NEXT_PUBLIC_REQUIRE_AUTH === "true";
+
 interface ProductCardProps {
   product: Product;
   onAddToCart?: (product: Product) => void;
@@ -32,10 +35,13 @@ export function ProductCard({
     
     try {
       setIsWishlistLoading(true);
-      const token = localStorage.getItem('auth_token');
-      
-      if (!token) {
-        alert('Please login to add items to wishlist');
+      const token =
+        typeof window !== "undefined"
+          ? localStorage.getItem('auth_token')
+          : null;
+
+      if (REQUIRE_AUTH && !token) {
+        alert('Please login to manage your wishlist');
         return;
       }
 
@@ -44,7 +50,7 @@ export function ProductCard({
         const response = await fetch(`/api/wishlist/${product.id}`, {
           method: 'DELETE',
           headers: {
-            'Authorization': `Bearer ${token}`
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
           }
         });
 
@@ -60,8 +66,8 @@ export function ProductCard({
         const response = await fetch('/api/wishlist', {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
           },
           body: JSON.stringify({
             productId: product.id

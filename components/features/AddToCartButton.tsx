@@ -5,6 +5,9 @@ import { ShoppingCart, Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import type { Product, ProductVariant } from "@/types";
 
+const REQUIRE_AUTH =
+  process.env.NEXT_PUBLIC_REQUIRE_AUTH === "true";
+
 interface AddToCartButtonProps {
   product: Product;
   variant?: ProductVariant;
@@ -28,18 +31,21 @@ export function AddToCartButton({
   const handleAddToCart = async () => {
     try {
       setIsLoading(true);
-      const token = localStorage.getItem('auth_token');
-      
-      if (!token) {
-        alert('Please login to add items to cart');
+      const token =
+        typeof window !== "undefined"
+          ? localStorage.getItem("auth_token")
+          : null;
+
+      if (REQUIRE_AUTH && !token) {
+        alert("Please login to add items to cart");
         return;
       }
 
       const response = await fetch('/api/cart', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {})
         },
         body: JSON.stringify({
           productId: product.id,

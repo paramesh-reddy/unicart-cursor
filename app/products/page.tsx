@@ -50,7 +50,11 @@ export default function ProductsPage() {
 
         if (productsResponse.ok) {
           const productsResponseData = await productsResponse.json();
-          if (productsResponseData.success && productsResponseData.products && Array.isArray(productsResponseData.products)) {
+          if (
+            productsResponseData.success &&
+            Array.isArray(productsResponseData.products) &&
+            productsResponseData.products.length > 0
+          ) {
             setProducts(productsResponseData.products);
           } else {
             // Fallback to static data if API response is invalid
@@ -67,7 +71,11 @@ export default function ProductsPage() {
 
         if (categoriesResponse.ok) {
           const categoriesResponseData = await categoriesResponse.json();
-          if (categoriesResponseData.success && categoriesResponseData.categories && Array.isArray(categoriesResponseData.categories)) {
+          if (
+            categoriesResponseData.success &&
+            Array.isArray(categoriesResponseData.categories) &&
+            categoriesResponseData.categories.length > 0
+          ) {
             setCategories(categoriesResponseData.categories);
           } else {
             // Fallback to static data if API response is invalid

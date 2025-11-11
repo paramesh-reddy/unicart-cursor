@@ -10,6 +10,9 @@ import { Badge } from "@/components/ui/Badge";
 import { formatPrice, calculateDiscount } from "@/lib/utils";
 import type { Product } from "@/types";
 
+const REQUIRE_AUTH =
+  process.env.NEXT_PUBLIC_REQUIRE_AUTH === "true";
+
 interface WishlistItem {
   id: string;
   product: Product;
@@ -21,20 +24,30 @@ export default function WishlistPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [copied, setCopied] = useState<string | null>(null);
 
+  const buildAuthHeaders = (shouldAlert = false) => {
+    if (typeof window === "undefined") return {};
+    const token = localStorage.getItem('auth_token');
+    if (REQUIRE_AUTH && !token) {
+      if (shouldAlert) {
+        alert('Please login to manage your wishlist.');
+      }
+      return null;
+    }
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
+  };
+
   // Fetch wishlist data from API
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
-        const token = localStorage.getItem('auth_token');
-        if (!token) {
+        const authHeaders = buildAuthHeaders();
+        if (authHeaders === null) {
           setIsLoading(false);
           return;
         }
 
         const response = await fetch('/api/wishlist', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          headers: authHeaders
         });
 
         if (response.ok) {
@@ -55,14 +68,12 @@ export default function WishlistPage() {
 
   const handleRemoveFromWishlist = async (productId: string) => {
     try {
-      const token = localStorage.getItem('auth_token');
-      if (!token) return;
+      const authHeaders = buildAuthHeaders(true);
+      if (authHeaders === null) return;
 
       const response = await fetch(`/api/wishlist/${productId}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers: authHeaders
       });
 
       if (response.ok) {
@@ -76,16 +87,13 @@ export default function WishlistPage() {
 
   const handleAddToCart = async (product: Product) => {
     try {
-      const token = localStorage.getItem('auth_token');
-      if (!token) {
-        alert('Please login to add items to cart');
-        return;
-      }
+      const authHeaders = buildAuthHeaders(true);
+      if (authHeaders === null) return;
 
       const response = await fetch('/api/cart', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          ...authHeaders,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
@@ -110,16 +118,14 @@ export default function WishlistPage() {
     if (!confirm("Are you sure you want to clear your wishlist?")) return;
 
     try {
-      const token = localStorage.getItem('auth_token');
-      if (!token) return;
+      const authHeaders = buildAuthHeaders(true);
+      if (authHeaders === null) return;
 
       // Remove all items one by one
       for (const item of wishlistItems) {
         await fetch(`/api/wishlist/${item.product.id}`, {
           method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          headers: authHeaders
         });
       }
 

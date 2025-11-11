@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import productsData from '@/data/products.json'
+import categoriesData from '@/data/categories.json'
 
 export const dynamic = 'force-dynamic'
 
@@ -46,10 +48,40 @@ export async function GET(
     })
 
     if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
+      const fallbackProducts = Array.isArray(productsData) ? productsData : []
+      const fallbackCategories = Array.isArray(categoriesData) ? categoriesData : []
+      const fallbackProduct = fallbackProducts.find(
+        (item: any) => item.id === id || item.slug === id
       )
+
+      if (!fallbackProduct) {
+        return NextResponse.json(
+          { error: 'Product not found' },
+          { status: 404 }
+        )
+      }
+
+      const fallbackCategory = fallbackCategories.find(
+        (category: any) => category.id === fallbackProduct.categoryId
+      )
+
+      return NextResponse.json({
+        success: true,
+        product: {
+          ...fallbackProduct,
+          category: fallbackCategory
+            ? {
+                id: fallbackCategory.id,
+                name: fallbackCategory.name,
+                slug: fallbackCategory.slug
+              }
+            : undefined,
+          images: Array.isArray(fallbackProduct.images) ? fallbackProduct.images : [],
+          variants: Array.isArray(fallbackProduct.variants) ? fallbackProduct.variants : [],
+          rating: fallbackProduct.rating ?? { average: 0, count: 0 },
+          reviews: []
+        }
+      })
     }
 
     // Calculate average rating

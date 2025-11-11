@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { withAuth, AuthenticatedRequest } from '@/lib/middleware'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import productsData from '@/data/products.json'
+import categoriesData from '@/data/categories.json'
+import { extractTokenFromHeader } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -10,8 +13,118 @@ const addToCartSchema = z.object({
   quantity: z.number().min(1, 'Quantity must be at least 1').max(100, 'Quantity cannot exceed 100')
 })
 
+type SampleCartItem = {
+  productId: string
+  quantity: number
+}
+
+const SAMPLE_MODE =
+  process.env.NEXT_PUBLIC_SAMPLE_MODE !== 'false' ||
+  !process.env.DATABASE_URL
+
+const rawSampleProducts = Array.isArray(productsData) ? productsData : []
+const rawSampleCategories = Array.isArray(categoriesData) ? categoriesData : []
+
+const globalAny = globalThis as unknown as {
+  __sampleCartStore__?: Map<string, SampleCartItem[]>
+}
+
+const sampleCartStore =
+  globalAny.__sampleCartStore__ ?? new Map<string, SampleCartItem[]>()
+
+if (!globalAny.__sampleCartStore__) {
+  globalAny.__sampleCartStore__ = sampleCartStore
+}
+
+function getSampleCartKey(request: NextRequest): string {
+  return (
+    extractTokenFromHeader(request.headers.get('authorization')) || 'guest'
+  )
+}
+
+function getSampleProduct(productId: string) {
+  return rawSampleProducts.find(
+    (product: any) =>
+      product.id === productId || product.slug === productId
+  )
+}
+
+function normalizeSampleProduct(product: any) {
+  if (!product) {
+    return undefined
+  }
+
+  const category = rawSampleCategories.find(
+    (cat: any) => cat.id === product.categoryId
+  )
+
+  return {
+    ...product,
+    images: Array.isArray(product.images) ? product.images : [],
+    variants: Array.isArray(product.variants) ? product.variants : [],
+    rating: product.rating ?? { average: 0, count: 0 },
+    category: category
+      ? {
+          id: category.id,
+          name: category.name,
+          slug: category.slug
+        }
+      : undefined
+  }
+}
+
+function buildSampleCartItems(items: SampleCartItem[]) {
+  return items
+    .map((item) => {
+      const product = normalizeSampleProduct(
+        getSampleProduct(item.productId)
+      )
+      if (!product) {
+        return null
+      }
+
+      return {
+        id: `sample-${product.id}`,
+        productId: product.id,
+        quantity: item.quantity,
+        price: product.price,
+        product
+      }
+    })
+    .filter(Boolean) as Array<{
+    id: string
+    productId: string
+    quantity: number
+    price: number
+    product: any
+  }>
+}
+
 // GET /api/cart - Get user's cart
 export async function GET(request: NextRequest) {
+  if (SAMPLE_MODE) {
+    const key = getSampleCartKey(request)
+    const items = sampleCartStore.get(key) ?? []
+    const detailedItems = buildSampleCartItems(items)
+    const subtotal = detailedItems.reduce(
+      (sum, item) => sum + item.price * item.quantity,
+      0
+    )
+    const itemCount = detailedItems.reduce(
+      (sum, item) => sum + item.quantity,
+      0
+    )
+
+    return NextResponse.json({
+      success: true,
+      cart: {
+        items: detailedItems,
+        subtotal,
+        itemCount
+      }
+    })
+  }
+
   return withAuth(request, async (req: AuthenticatedRequest) => {
     try {
       const cartItems = await prisma.cartItem.findMany({
@@ -85,6 +198,67 @@ export async function GET(request: NextRequest) {
 
 // POST /api/cart - Add item to cart
 export async function POST(request: NextRequest) {
+  if (SAMPLE_MODE) {
+    try {
+      const body = await request.json()
+      const { productId, quantity } = addToCartSchema.parse(body)
+
+      const product = normalizeSampleProduct(getSampleProduct(productId))
+
+      if (!product) {
+        return NextResponse.json(
+          { error: 'Product not found' },
+          { status: 404 }
+        )
+      }
+
+      const key = getSampleCartKey(request)
+      const cartItems = (sampleCartStore.get(key) ?? []).map((item) => ({
+        ...item
+      }))
+
+      const existingItem = cartItems.find(
+        (item) => item.productId === product.id
+      )
+
+      if (existingItem) {
+        existingItem.quantity += quantity
+      } else {
+        cartItems.push({
+          productId: product.id,
+          quantity
+        })
+      }
+
+      sampleCartStore.set(key, cartItems)
+
+      const itemPayload = buildSampleCartItems([
+        existingItem ?? { productId: product.id, quantity }
+      ])[0]
+
+      return NextResponse.json({
+        success: true,
+        message: existingItem
+          ? 'Cart updated successfully'
+          : 'Item added to cart successfully',
+        item: itemPayload
+      })
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return NextResponse.json(
+          { error: 'Validation failed', details: error.errors },
+          { status: 400 }
+        )
+      }
+
+      console.error('Sample add to cart error:', error)
+      return NextResponse.json(
+        { error: 'Failed to add item to cart' },
+        { status: 500 }
+      )
+    }
+  }
+
   return withAuth(request, async (req: AuthenticatedRequest) => {
     try {
       const body = await request.json()

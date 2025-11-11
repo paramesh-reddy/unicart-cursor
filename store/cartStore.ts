@@ -32,9 +32,6 @@ export const useCartStore = create<CartStore>()(
 
       fetchCart: async () => {
         try {
-          const token = localStorage.getItem('auth_token');
-          if (!token) return;
-
           const data = await apiClient.get('/api/cart');
           if (data.success) {
             set({ items: data.cart.items || [] });
@@ -47,14 +44,6 @@ export const useCartStore = create<CartStore>()(
       addItem: async (product, quantity = 1, variant) => {
         try {
           set({ isLoading: true });
-          const token = localStorage.getItem('auth_token');
-          
-          if (!token) {
-            console.error('User not authenticated');
-            set({ isLoading: false });
-            return;
-          }
-
           const data = await apiClient.post('/api/cart', {
             productId: product.id,
             quantity: quantity
@@ -74,14 +63,6 @@ export const useCartStore = create<CartStore>()(
       removeItem: async (itemId) => {
         try {
           set({ isLoading: true });
-          const token = localStorage.getItem('auth_token');
-          
-          if (!token) {
-            console.error('User not authenticated');
-            set({ isLoading: false });
-            return;
-          }
-
           // Find the product ID from the item
           const item = get().items.find(item => item.id === itemId);
           if (!item) return;
@@ -102,14 +83,6 @@ export const useCartStore = create<CartStore>()(
           if (quantity < 1) return;
 
           set({ isLoading: true });
-          const token = localStorage.getItem('auth_token');
-          
-          if (!token) {
-            console.error('User not authenticated');
-            set({ isLoading: false });
-            return;
-          }
-
           // Find the product ID from the item
           const item = get().items.find(item => item.id === itemId);
           if (!item) return;
@@ -128,14 +101,6 @@ export const useCartStore = create<CartStore>()(
       clearCart: async () => {
         try {
           set({ isLoading: true });
-          const token = localStorage.getItem('auth_token');
-          
-          if (!token) {
-            console.error('User not authenticated');
-            set({ isLoading: false });
-            return;
-          }
-
           // Remove all items one by one
           const items = get().items;
           for (const item of items) {
