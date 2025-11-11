@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { hashPassword, verifyPassword, generateToken } from '@/lib/auth'
 import { z } from 'zod'
 
+export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 // Validation schemas
