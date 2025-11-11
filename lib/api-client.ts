@@ -2,7 +2,8 @@
  * API Client for UniCart
  * Handles API calls for both web (relative paths) and mobile (full URLs)
  */
-import { Capacitor, CapacitorHttp } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core';
+import { Http } from '@capacitor-community/http';
 
 const normalizeBaseUrl = (url: string | undefined | null): string => {
   if (!url) return '';
@@ -64,9 +65,9 @@ export const apiClient = {
         }
       }
 
-      const nativeResponse = await CapacitorHttp.request({
+      const nativeResponse = await Http.request({
         url: fullUrl,
-        method,
+        method: method as any,
         headers,
         data,
       });
