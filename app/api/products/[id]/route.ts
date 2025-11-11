@@ -50,7 +50,7 @@ export async function GET(
     if (!product) {
       const fallbackProducts = Array.isArray(productsData) ? productsData : []
       const fallbackCategories = Array.isArray(categoriesData) ? categoriesData : []
-      const fallbackProduct = fallbackProducts.find(
+      const fallbackProduct: any = fallbackProducts.find(
         (item: any) => item.id === id || item.slug === id
       )
 
