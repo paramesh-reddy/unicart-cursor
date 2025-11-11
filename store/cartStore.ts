@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import type { CartItem, Product, ProductVariant } from "@/types";
 import { CART_STORAGE_KEY, TAX_RATE, FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
 import { apiClient } from "@/lib/api-client";
+import { apiurl } from "@/store/constants";
 
 interface CartStore {
   items: CartItem[];
@@ -32,7 +33,7 @@ export const useCartStore = create<CartStore>()(
 
       fetchCart: async () => {
         try {
-          const data = await apiClient.get('/api/cart');
+          const data = await apiClient.get(`${apiurl}api/cart`);
           if (data.success) {
             set({ items: data.cart.items || [] });
           }
@@ -44,7 +45,7 @@ export const useCartStore = create<CartStore>()(
       addItem: async (product, quantity = 1, variant) => {
         try {
           set({ isLoading: true });
-          const data = await apiClient.post('/api/cart', {
+          const data = await apiClient.post(`${apiurl}api/cart`, {
             productId: product.id,
             quantity: quantity
           });
@@ -67,7 +68,7 @@ export const useCartStore = create<CartStore>()(
           const item = get().items.find(item => item.id === itemId);
           if (!item) return;
 
-          await apiClient.delete(`/api/cart/${item.productId}`);
+          await apiClient.delete(`${apiurl}api/cart/${item.productId}`);
           
           // Refresh cart from server
           await get().fetchCart();
@@ -87,7 +88,7 @@ export const useCartStore = create<CartStore>()(
           const item = get().items.find(item => item.id === itemId);
           if (!item) return;
 
-          await apiClient.put(`/api/cart/${item.productId}`, { quantity });
+          await apiClient.put(`${apiurl}api/cart/${item.productId}`, { quantity });
 
           // Refresh cart from server
           await get().fetchCart();
@@ -104,7 +105,7 @@ export const useCartStore = create<CartStore>()(
           // Remove all items one by one
           const items = get().items;
           for (const item of items) {
-            await apiClient.delete(`/api/cart/${item.productId}`);
+            await apiClient.delete(`${apiurl}api/cart/${item.productId}`);
           }
 
           // Refresh cart from server

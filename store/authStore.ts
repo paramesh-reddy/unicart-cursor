@@ -2,19 +2,19 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { User } from "@/types";
 import { apiClient } from "@/lib/api-client";
-
+import { apiurl } from "@/store/constants";
 interface AuthStore {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   
-  // Actions
+// Actions
   login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
   register: (data: { email: string; password: string; firstName?: string; lastName?: string }) => Promise<{ success: boolean; message: string }>;
   logout: () => void;
   checkAuth: () => void;
 }
-
+  
 export const useAuthStore = create<AuthStore>()(
   persist(
     (set, get) => ({
@@ -27,7 +27,7 @@ export const useAuthStore = create<AuthStore>()(
           set({ isLoading: true });
           
           // Call the working login API using apiClient
-          const data = await apiClient.post('/api/auth/login', { email, password });
+          const data = await apiClient.post(`${apiurl}api/auth/login`, { email, password });
           
           if (data.success) {
             // Store token and user data
@@ -58,7 +58,7 @@ export const useAuthStore = create<AuthStore>()(
           const { email, password, firstName, lastName } = data;
           
           // Call the working register API using apiClient
-          const result = await apiClient.post('/api/auth/register', { email, password, firstName, lastName });
+          const result = await apiClient.post(`${apiurl}api/auth/register`, { email, password, firstName, lastName });
           
           if (result.success) {
             // Store token and user data
