@@ -14,14 +14,16 @@ import type { CartItem } from "@/types";
 const REQUIRE_AUTH =
   process.env.NEXT_PUBLIC_REQUIRE_AUTH === "true";
 
+type HeaderMap = Record<string, string>;
+
 export default function CartPage() {
   const [promoCode, setPromoCode] = useState("");
   const [promoApplied, setPromoApplied] = useState(false);
   const [items, setItems] = useState<CartItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const buildAuthHeaders = (shouldAlert = false) => {
-    if (typeof window === "undefined") return {};
+  const buildAuthHeaders = (shouldAlert = false): HeaderMap | null => {
+    if (typeof window === "undefined") return {} as HeaderMap;
     const token = localStorage.getItem('auth_token');
     if (REQUIRE_AUTH && !token) {
       if (shouldAlert) {
@@ -29,7 +31,11 @@ export default function CartPage() {
       }
       return null;
     }
-    return token ? { 'Authorization': `Bearer ${token}` } : {};
+    const headers: HeaderMap = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    return headers;
   };
 
   // Fetch cart data from API

@@ -13,6 +13,8 @@ import type { Product } from "@/types";
 const REQUIRE_AUTH =
   process.env.NEXT_PUBLIC_REQUIRE_AUTH === "true";
 
+type HeaderMap = Record<string, string>;
+
 interface WishlistItem {
   id: string;
   product: Product;
@@ -24,8 +26,8 @@ export default function WishlistPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [copied, setCopied] = useState<string | null>(null);
 
-  const buildAuthHeaders = (shouldAlert = false) => {
-    if (typeof window === "undefined") return {};
+  const buildAuthHeaders = (shouldAlert = false): HeaderMap | null => {
+    if (typeof window === "undefined") return {} as HeaderMap;
     const token = localStorage.getItem('auth_token');
     if (REQUIRE_AUTH && !token) {
       if (shouldAlert) {
@@ -33,7 +35,11 @@ export default function WishlistPage() {
       }
       return null;
     }
-    return token ? { 'Authorization': `Bearer ${token}` } : {};
+    const headers: HeaderMap = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    return headers;
   };
 
   // Fetch wishlist data from API
