@@ -2,6 +2,7 @@
  * API Client for UniCart
  * Handles API calls for both web (relative paths) and mobile (full URLs)
  */
+import { Capacitor, CapacitorHttp } from '@capacitor/core';
 
 const normalizeBaseUrl = (url: string | undefined | null): string => {
   if (!url) return '';
@@ -14,8 +15,7 @@ export const getApiBaseUrl = (): string => {
   const envUrl = normalizeBaseUrl(process.env.NEXT_PUBLIC_API_URL);
 
   if (typeof window !== 'undefined') {
-    const capacitor = (window as any).Capacitor;
-    if (capacitor && typeof capacitor.isNativePlatform === 'function' && capacitor.isNativePlatform()) {
+    if (Capacitor?.isNativePlatform?.()) {
       // Mobile (Capacitor) - must use absolute URL
       return envUrl || 'https://unicart-cursor5.vercel.app/';
     }
@@ -50,6 +50,52 @@ export const apiClient = {
       headers['Authorization'] = `Bearer ${token}`;
     }
     
+    const isNative = typeof window !== 'undefined' && Capacitor?.isNativePlatform?.();
+
+    if (isNative) {
+      const method = (options?.method || 'GET').toUpperCase();
+      let data: any = undefined;
+
+      if (options?.body) {
+        try {
+          data = typeof options.body === 'string' ? JSON.parse(options.body) : options.body;
+        } catch {
+          data = options.body;
+        }
+      }
+
+      const nativeResponse = await CapacitorHttp.request({
+        url: fullUrl,
+        method,
+        headers,
+        data,
+      });
+
+      const ok = nativeResponse.status >= 200 && nativeResponse.status < 300;
+
+      if (!ok) {
+        const errorData = nativeResponse.data;
+        const message =
+          (typeof errorData === 'object' && errorData !== null && 'error' in errorData)
+            ? (errorData as { error?: string }).error
+            : undefined;
+        throw new Error(message || `HTTP ${nativeResponse.status}`);
+      }
+
+      const responseLike = {
+        ok: true,
+        status: nativeResponse.status,
+        statusText: nativeResponse.headers?.['Status'] || 'OK',
+        json: async () => nativeResponse.data,
+        text: async () =>
+          typeof nativeResponse.data === 'string'
+            ? nativeResponse.data
+            : JSON.stringify(nativeResponse.data),
+      } as unknown as Response;
+
+      return responseLike;
+    }
+
     const response = await fetch(fullUrl, {
       ...options,
       headers,
