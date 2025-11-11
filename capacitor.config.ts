@@ -17,7 +17,7 @@ const config: CapacitorConfig = {
       }
     : {
         // Default to production deployment URL when no override is provided
-        url: 'https://unicart-cursor.vercel.app',
+        url: 'https://unicart-cursor5.vercel.app',
         cleartext: false,
         androidScheme: 'https',
         iosScheme: 'https'
