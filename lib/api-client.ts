@@ -3,18 +3,29 @@
  * Handles API calls for both web (relative paths) and mobile (full URLs)
  */
 
-const getApiBaseUrl = (): string => {
-  // Check if we're in a Capacitor mobile app
+const normalizeBaseUrl = (url: string | undefined | null): string => {
+  if (!url) return '';
+  const trimmed = url.trim().replace(/\/+$/, '');
+  if (!trimmed) return '';
+  return `${trimmed}/`;
+};
+
+export const getApiBaseUrl = (): string => {
+  const envUrl = normalizeBaseUrl(process.env.NEXT_PUBLIC_API_URL);
+
   if (typeof window !== 'undefined') {
     const capacitor = (window as any).Capacitor;
-    if (capacitor && capacitor.isNativePlatform()) {
-      // Mobile app - use full URL from environment variable
-      return process.env.NEXT_PUBLIC_API_URL || 'https://your-app.vercel.app';
+    if (capacitor && typeof capacitor.isNativePlatform === 'function' && capacitor.isNativePlatform()) {
+      // Mobile (Capacitor) - must use absolute URL
+      return envUrl || 'https://unicart-cursor5.vercel.app/';
     }
+
+    // Browser - use relative paths to avoid CORS
+    return '';
   }
-  
-  // Web browser - use relative paths
-  return '';
+
+  // Server-side (SSR/ISR) - fall back to env URL if provided
+  return envUrl;
 };
 
 export const apiClient = {
