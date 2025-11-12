@@ -65,51 +65,78 @@ export const apiClient = {
         }
       }
 
-      const nativeResponse = await Http.request({
-        url: fullUrl,
-        method: method as any,
-        headers,
-        data,
-      });
+      try {
+        const nativeResponse = await Http.request({
+          url: fullUrl,
+          method: method as any,
+          headers,
+          data,
+        });
 
-      const ok = nativeResponse.status >= 200 && nativeResponse.status < 300;
+        const ok = nativeResponse.status >= 200 && nativeResponse.status < 300;
 
-      if (!ok) {
-        const errorData = nativeResponse.data;
-        const message =
-          (typeof errorData === 'object' && errorData !== null && 'error' in errorData)
-            ? (errorData as { error?: string }).error
-            : undefined;
-        throw new Error(message || `HTTP ${nativeResponse.status}`);
+        if (!ok) {
+          const errorData = nativeResponse.data;
+          const message =
+            (typeof errorData === 'object' && errorData !== null && 'error' in errorData)
+              ? (errorData as { error?: string }).error
+              : undefined;
+          throw new Error(message || `HTTP ${nativeResponse.status}`);
+        }
+
+        const responseLike = {
+          ok: true,
+          status: nativeResponse.status,
+          statusText: nativeResponse.headers?.['Status'] || 'OK',
+          json: async () => nativeResponse.data,
+          text: async () =>
+            typeof nativeResponse.data === 'string'
+              ? nativeResponse.data
+              : JSON.stringify(nativeResponse.data),
+        } as unknown as Response;
+
+        return responseLike;
+      } catch (error: any) {
+        // Handle network errors, connection failures, etc.
+        if (error.message) {
+          // If it's already a formatted error, re-throw it
+          throw error;
+        }
+        // Handle Capacitor HTTP plugin errors
+        if (error.error) {
+          throw new Error(error.error || 'Network request failed');
+        }
+        // Generic network error
+        throw new Error(error.toString() || 'Failed to connect to server. Please check your internet connection.');
       }
-
-      const responseLike = {
-        ok: true,
-        status: nativeResponse.status,
-        statusText: nativeResponse.headers?.['Status'] || 'OK',
-        json: async () => nativeResponse.data,
-        text: async () =>
-          typeof nativeResponse.data === 'string'
-            ? nativeResponse.data
-            : JSON.stringify(nativeResponse.data),
-      } as unknown as Response;
-
-      return responseLike;
     }
 
-    const response = await fetch(fullUrl, {
-      ...options,
-      headers,
-    });
-    
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ 
-        error: `HTTP ${response.status}: ${response.statusText}` 
-      }));
-      throw new Error(error.error || `HTTP ${response.status}`);
+    try {
+      const response = await fetch(fullUrl, {
+        ...options,
+        headers,
+      });
+      
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ 
+          error: `HTTP ${response.status}: ${response.statusText}` 
+        }));
+        throw new Error(error.error || `HTTP ${response.status}`);
+      }
+      
+      return response;
+    } catch (error: any) {
+      // Handle network errors (CORS, connection refused, etc.)
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Failed to connect to server. Please check your internet connection and try again.');
+      }
+      // Re-throw if it's already a formatted error
+      if (error.message) {
+        throw error;
+      }
+      // Generic error
+      throw new Error(error.toString() || 'Network request failed');
     }
-    
-    return response;
   },
   
   /**

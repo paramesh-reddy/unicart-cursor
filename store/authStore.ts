@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { User } from "@/types";
 import { apiClient } from "@/lib/api-client";
-import { apiurl } from "@/store/constants";
 interface AuthStore {
   user: User | null;
   isAuthenticated: boolean;
@@ -26,8 +25,8 @@ export const useAuthStore = create<AuthStore>()(
         try {
           set({ isLoading: true });
           
-          // Call the working login API using apiClient
-          const data = await apiClient.post(`${apiurl}api/auth/login`, { email, password });
+          // Call the login API using apiClient (it handles base URL automatically)
+          const data = await apiClient.post('/api/auth/login', { email, password });
           
           if (data.success) {
             // Store token and user data
@@ -48,7 +47,10 @@ export const useAuthStore = create<AuthStore>()(
           }
         } catch (error: any) {
           set({ isLoading: false });
-          return { success: false, message: error.message || "Network error. Please try again." };
+          // Extract error message from the error object
+          const errorMessage = error?.message || error?.toString() || "Network error. Please check your internet connection and try again.";
+          console.error('Login error:', error);
+          return { success: false, message: errorMessage };
         }
       },
 
@@ -57,8 +59,8 @@ export const useAuthStore = create<AuthStore>()(
           set({ isLoading: true });
           const { email, password, firstName, lastName } = data;
           
-          // Call the working register API using apiClient
-          const result = await apiClient.post(`${apiurl}api/auth/register`, { email, password, firstName, lastName });
+          // Call the register API using apiClient (it handles base URL automatically)
+          const result = await apiClient.post('/api/auth/register', { email, password, firstName, lastName });
           
           if (result.success) {
             // Store token and user data
@@ -79,7 +81,10 @@ export const useAuthStore = create<AuthStore>()(
           }
         } catch (error: any) {
           set({ isLoading: false });
-          return { success: false, message: error.message || "Network error. Please try again." };
+          // Extract error message from the error object
+          const errorMessage = error?.message || error?.toString() || "Network error. Please check your internet connection and try again.";
+          console.error('Registration error:', error);
+          return { success: false, message: errorMessage };
         }
       },
 
