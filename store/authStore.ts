@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { User } from "@/types";
-import { apiClient } from "@/lib/api-client";
+import { apiurl } from "@/store/constants";
 interface AuthStore {
   user: User | null;
   isAuthenticated: boolean;
@@ -25,8 +25,17 @@ export const useAuthStore = create<AuthStore>()(
         try {
           set({ isLoading: true });
           
-          // Call the login API using apiClient (it handles base URL automatically)
-          const data = await apiClient.post('/api/auth/login', { email, password });
+          const token = localStorage.getItem('auth_token');
+          const response = await fetch(`${apiurl}/api/auth/login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+            },
+            body: JSON.stringify({ email, password }),
+          });
+          
+          const data = await response.json();
           
           if (data.success) {
             // Store token and user data
@@ -59,8 +68,17 @@ export const useAuthStore = create<AuthStore>()(
           set({ isLoading: true });
           const { email, password, firstName, lastName } = data;
           
-          // Call the register API using apiClient (it handles base URL automatically)
-          const result = await apiClient.post('/api/auth/register', { email, password, firstName, lastName });
+          const token = localStorage.getItem('auth_token');
+          const response = await fetch(`${apiurl}/api/auth/register`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+            },
+            body: JSON.stringify({ email, password, firstName, lastName }),
+          });
+          
+          const result = await response.json();
           
           if (result.success) {
             // Store token and user data
