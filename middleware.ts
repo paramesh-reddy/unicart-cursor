@@ -3,8 +3,7 @@ import type { NextRequest } from "next/server";
 
 const corsHeaders = {
   "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS,PATCH",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
-  "Access-Control-Allow-Credentials": "true",
+  "Access-Control-Allow-Headers": "*",
 };
 
 // Protected routes that require authentication
@@ -20,17 +19,15 @@ export function middleware(request: NextRequest) {
 
   if (pathname.startsWith("/api/")) {
     const headers = new Headers(corsHeaders);
-    if (origin) {
-      headers.set("Access-Control-Allow-Origin", origin);
-    } else {
-      headers.set("Access-Control-Allow-Origin", "*");
-    }
-    // Echo requested headers for preflight robustness
+    // Reflect origin to support credentials and broad allow
+    headers.set("Access-Control-Allow-Origin", origin || "*");
+    headers.set("Vary", "Origin");
+    headers.set("Access-Control-Allow-Credentials", "true");
+    // Helpful for reducing preflight frequency
+    headers.set("Access-Control-Max-Age", "86400");
     if (requestedHeaders) {
       headers.set("Access-Control-Allow-Headers", requestedHeaders);
     }
-    // Helpful for reducing preflight frequency
-    headers.set("Access-Control-Max-Age", "86400");
 
     if (request.method === "OPTIONS") {
       return new NextResponse(null, {
@@ -41,12 +38,8 @@ export function middleware(request: NextRequest) {
 
     const response = NextResponse.next();
     headers.forEach((value, key) => {
-      if (key === "Access-Control-Allow-Origin" && !value) return;
       response.headers.set(key, value);
     });
-    if (origin) {
-      response.headers.set("Vary", "Origin");
-    }
     return response;
   }
 

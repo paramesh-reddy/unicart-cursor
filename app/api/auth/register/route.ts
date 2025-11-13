@@ -8,14 +8,13 @@ export const dynamic = 'force-dynamic'
 
 function applyCors(response: NextResponse, request: NextRequest) {
   const origin = request.headers.get('origin') || '*'
+  const requestedHeaders = request.headers.get('access-control-request-headers') || '*'
   response.headers.set('Access-Control-Allow-Origin', origin)
-  response.headers.set('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS,PATCH')
-  response.headers.set('Access-Control-Allow-Headers', request.headers.get('access-control-request-headers') || 'Content-Type, Authorization, X-Requested-With')
+  response.headers.set('Vary', 'Origin')
   response.headers.set('Access-Control-Allow-Credentials', 'true')
+  response.headers.set('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS,PATCH')
+  response.headers.set('Access-Control-Allow-Headers', requestedHeaders)
   response.headers.set('Access-Control-Max-Age', '86400')
-  if (origin && origin !== '*') {
-    response.headers.set('Vary', 'Origin')
-  }
   return response
 }
 
