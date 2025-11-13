@@ -26,16 +26,9 @@ export const useAuthStore = create<AuthStore>()(
         try {
           set({ isLoading: true });
           
-          const token = localStorage.getItem('auth_token');
           const response = await axios.post(
             `${apiurl}/api/auth/login`,
-            { email, password },
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-              },
-            }
+            { email, password }
           );
           
           const data = response.data;
@@ -74,16 +67,9 @@ export const useAuthStore = create<AuthStore>()(
           set({ isLoading: true });
           const { email, password, firstName, lastName } = data;
           
-          const token = localStorage.getItem('auth_token');
           const response = await axios.post(
             `${apiurl}/api/auth/register`,
-            { email, password, firstName, lastName },
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-              },
-            }
+            { email, password, firstName, lastName }
           );
           
           const result = response.data;

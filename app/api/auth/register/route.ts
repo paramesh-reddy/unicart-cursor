@@ -6,22 +6,6 @@ import { z } from 'zod'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-function applyCors(response: NextResponse, request: NextRequest) {
-  const origin = request.headers.get('origin') || '*'
-  const requestedHeaders = request.headers.get('access-control-request-headers') || '*'
-  response.headers.set('Access-Control-Allow-Origin', origin)
-  response.headers.set('Vary', 'Origin')
-  response.headers.set('Access-Control-Allow-Credentials', 'true')
-  response.headers.set('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS,PATCH')
-  response.headers.set('Access-Control-Allow-Headers', requestedHeaders)
-  response.headers.set('Access-Control-Max-Age', '86400')
-  return response
-}
-
-export async function OPTIONS(request: NextRequest) {
-  return applyCors(new NextResponse(null, { status: 204 }), request)
-}
-
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
@@ -41,10 +25,10 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingUser) {
-      return applyCors(NextResponse.json(
+      return NextResponse.json(
         { error: 'An account with this email already exists' },
         { status: 400 }
-      ), request)
+      )
     }
 
     // Hash password
@@ -80,34 +64,34 @@ export async function POST(request: NextRequest) {
       role: user.role
     })
 
-    return applyCors(NextResponse.json({
+    return NextResponse.json({
       success: true,
       user,
       token
-    }), request)
+    })
 
   } catch (error) {
     console.error('Registration error:', error)
     
     if (error instanceof z.ZodError) {
-      return applyCors(NextResponse.json(
+      return NextResponse.json(
         { error: 'Validation failed', details: error.errors },
         { status: 400 }
-      ), request)
+      )
     }
 
     // Handle known Prisma errors (e.g., unique constraint)
     // @ts-ignore - avoid importing prisma error types to keep bundle small
     if (error?.code === 'P2002') {
-      return applyCors(NextResponse.json(
+      return NextResponse.json(
         { error: 'An account with this email already exists' },
         { status: 400 }
-      ), request)
+      )
     }
 
-    return applyCors(NextResponse.json(
+    return NextResponse.json(
       { error: 'Registration failed' },
       { status: 500 }
-    ), request)
+    )
   }
 }
