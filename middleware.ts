@@ -1,12 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS,PATCH",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-  "Access-Control-Max-Age": "86400",
-};
+const allowedOrigins = ["http://localhost:3000", "capacitor://localhost", "http://localhost","https://unicart-cursor5.vercel.app"];
 
 // Protected routes that require authentication
 const protectedRoutes = ["/account", "/checkout", "/wishlist"];
@@ -15,10 +10,25 @@ const protectedRoutes = ["/account", "/checkout", "/wishlist"];
 const authRoutes = ["/login", "/register"];
 
 export function middleware(request: NextRequest) {
+  const origin = request.headers.get("origin");
+  const isAllowedOrigin = origin && allowedOrigins.includes(origin);
+
   const { pathname } = request.nextUrl;
-  const requestedHeaders = request.headers.get("access-control-request-headers") || "";
+  const requestedHeaders =
+    request.headers.get("access-control-request-headers") || "";
 
   if (pathname.startsWith("/api/")) {
+    const corsHeaders: Record<string, string> = {
+      "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS,PATCH",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Max-Age": "86400",
+    };
+
+    if (isAllowedOrigin) {
+      corsHeaders["Access-Control-Allow-Origin"] = origin;
+      corsHeaders["Access-Control-Allow-Credentials"] = "true";
+    }
+
     const headers = new Headers(corsHeaders);
     if (requestedHeaders) {
       headers.set("Access-Control-Allow-Headers", requestedHeaders);
@@ -39,8 +49,10 @@ export function middleware(request: NextRequest) {
   }
 
   // Check if accessing protected routes (TODO: implement auth guard)
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-  const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
 
   return NextResponse.next();
 }
