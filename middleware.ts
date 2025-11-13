@@ -1,15 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const allowedOrigins = [
-  "http://localhost:3000",
-  "http://127.0.0.1:3000",
-  "capacitor://localhost",
-  process.env.NEXT_PUBLIC_APP_URL,
-  process.env.NEXT_PUBLIC_API_URL,
-  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined,
-].filter(Boolean) as string[];
-
 const corsHeaders = {
   "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS,PATCH",
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With",
@@ -25,15 +16,21 @@ const authRoutes = ["/login", "/register"];
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const origin = request.headers.get("origin") || "";
+  const requestedHeaders = request.headers.get("access-control-request-headers") || "";
 
   if (pathname.startsWith("/api/")) {
-    const isAllowedOrigin =
-      !origin || allowedOrigins.includes(origin);
-
     const headers = new Headers(corsHeaders);
-    if (isAllowedOrigin && origin) {
+    if (origin) {
       headers.set("Access-Control-Allow-Origin", origin);
+    } else {
+      headers.set("Access-Control-Allow-Origin", "*");
     }
+    // Echo requested headers for preflight robustness
+    if (requestedHeaders) {
+      headers.set("Access-Control-Allow-Headers", requestedHeaders);
+    }
+    // Helpful for reducing preflight frequency
+    headers.set("Access-Control-Max-Age", "86400");
 
     if (request.method === "OPTIONS") {
       return new NextResponse(null, {
@@ -65,6 +62,5 @@ export const config = {
   matcher: [
     "/api/:path*",
     "/((?!_next/static|_next/image|favicon.ico).*)",
-  ],
+],
 };
-
