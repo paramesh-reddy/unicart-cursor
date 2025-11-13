@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { User } from "@/types";
 import { apiurl } from "@/store/constants";
-import axios from "axios";
 interface AuthStore {
   user: User | null;
   isAuthenticated: boolean;
@@ -27,18 +26,24 @@ export const useAuthStore = create<AuthStore>()(
           set({ isLoading: true });
           
           const token = localStorage.getItem('auth_token');
-          const response = await axios.post(
+          const headers: HeadersInit = {
+            'Content-Type': 'application/json',
+          };
+          
+          if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+          }
+          
+          const response = await fetch(
             `${apiurl}/api/auth/login`,
-            { email, password },
             {
-              headers: {
-                'Content-Type': 'application/json',
-                ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-              },
+              method: 'POST',
+              headers,
+              body: JSON.stringify({ email, password }),
             }
           );
           
-          const data = response.data;
+          const data = await response.json();
           
           if (data.success) {
             // Store token and user data
@@ -59,9 +64,8 @@ export const useAuthStore = create<AuthStore>()(
           }
         } catch (error: any) {
           set({ isLoading: false });
-          // Extract error message from axios error
-          const errorMessage = (axios.isAxiosError(error) && (error.response?.data?.error || error.message))
-            || error?.message
+          // Extract error message
+          const errorMessage = error?.message
             || error?.toString()
             || "Network error. Please check your internet connection and try again.";
           console.error('Login error:', error);
@@ -75,18 +79,24 @@ export const useAuthStore = create<AuthStore>()(
           const { email, password, firstName, lastName } = data;
           
           const token = localStorage.getItem('auth_token');
-          const response = await axios.post(
+          const headers: HeadersInit = {
+            'Content-Type': 'application/json',
+          };
+          
+          if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+          }
+          
+          const response = await fetch(
             `${apiurl}/api/auth/register`,
-            { email, password, firstName, lastName },
             {
-              headers: {
-                'Content-Type': 'application/json',
-                ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-              },
+              method: 'POST',
+              headers,
+              body: JSON.stringify({ email, password, firstName, lastName }),
             }
           );
           
-          const result = response.data;
+          const result = await response.json();
           
           if (result.success) {
             // Store token and user data
@@ -107,9 +117,8 @@ export const useAuthStore = create<AuthStore>()(
           }
         } catch (error: any) {
           set({ isLoading: false });
-          // Extract error message from axios error
-          const errorMessage = (axios.isAxiosError(error) && (error.response?.data?.error || error.message))
-            || error?.message
+          // Extract error message
+          const errorMessage = error?.message
             || error?.toString()
             || "Network error. Please check your internet connection and try again.";
           console.error('Registration error:', error);
