@@ -160,6 +160,16 @@ router.post('/register', async (req, res) => {
       })
     }
 
+    // In debug mode, surface Prisma error details to help diagnose 500s on deploy
+    const isDebug = process.env.DEBUG_ERRORS === 'true' || process.env.NODE_ENV !== 'production'
+    if (isDebug) {
+      return res.status(500).json({
+        error: 'Registration failed',
+        code: (error as any)?.code,
+        message: (error as any)?.message
+      })
+    }
+
     res.status(500).json({ error: 'Registration failed' })
   }
 })
