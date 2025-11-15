@@ -162,7 +162,7 @@ router.post('/register', async (req, res) => {
 
     // In debug mode, surface Prisma error details to help diagnose 500s on deploy
       return res.status(500).json({
-        error: 'Registration failed',
+        error: 'Registration failed testinggg',
         code: (error as any)?.code,
         message: (error as any)?.message
       })
