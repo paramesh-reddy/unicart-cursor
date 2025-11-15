@@ -161,31 +161,7 @@ router.post('/register', async (req, res) => {
       })
     }
 
-    // Database connection errors
-    if (prismaError?.code === 'P1001' || prismaError?.message?.includes('Can\'t reach database')) {
-      return res.status(500).json({ 
-        error: 'Database connection failed. Please check DATABASE_URL environment variable.',
-        details: 'The backend cannot connect to the database. This is a server configuration issue.'
-      })
-    }
-
-    // Missing environment variables
-    if (prismaError?.message?.includes('DATABASE_URL') || !process.env.DATABASE_URL) {
-      return res.status(500).json({ 
-        error: 'Database configuration missing',
-        details: 'DATABASE_URL environment variable is not set on the server.'
-      })
-    }
-
-    // Return detailed error in development, generic in production
-    const isDevelopment = process.env.NODE_ENV !== 'production'
-    res.status(500).json({ 
-      error: 'Registration failed',
-      ...(isDevelopment && { 
-        details: prismaError?.message || String(error),
-        code: prismaError?.code 
-      })
-    })
+    res.status(500).json({ error: 'Registration failed', details: error ,db_url:process.env.DATABASE_URL})
   }
 })
 
