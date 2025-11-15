@@ -161,7 +161,19 @@ router.post('/register', async (req, res) => {
       })
     }
 
-    res.status(500).json({ error: 'Registration failed', details: error ,db_url:process.env.DATABASE_URL})
+    // Return detailed error for debugging (but don't expose sensitive info)
+    const isDevelopment = process.env.NODE_ENV !== 'production'
+    const prismaError = error as any
+    
+    res.status(500).json({ 
+      error: 'Registration failed',
+      ...(isDevelopment && {
+        details: prismaError?.message || String(error),
+        code: prismaError?.code,
+        hasDatabase: !!process.env.DATABASE_URL,
+        hasJwtSecret: !!process.env.JWT_SECRET
+      })
+    })
   }
 })
 

@@ -1,1 +1,1 @@
-export const apiurl = "https://unicart-cursor5.vercel.app"
+export const apiurl = "https://unicart-backend.vercel.app"
