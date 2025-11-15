@@ -1,0 +1,57 @@
+[
+  {
+    "id": "1",
+    "name": "Electronics",
+    "slug": "electronics",
+    "description": "Latest electronics and gadgets",
+    "imageUrl": "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&h=300&fit=crop",
+    "isActive": true,
+    "displayOrder": 1
+  },
+  {
+    "id": "2",
+    "name": "Fashion",
+    "slug": "fashion",
+    "description": "Trending fashion and apparel",
+    "imageUrl": "https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=300&fit=crop",
+    "isActive": true,
+    "displayOrder": 2
+  },
+  {
+    "id": "3",
+    "name": "Home & Kitchen",
+    "slug": "home-kitchen",
+    "description": "Everything for your home",
+    "imageUrl": "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=400&h=300&fit=crop",
+    "isActive": true,
+    "displayOrder": 3
+  },
+  {
+    "id": "4",
+    "name": "Beauty",
+    "slug": "beauty",
+    "description": "Beauty and personal care products",
+    "imageUrl": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=300&fit=crop",
+    "isActive": true,
+    "displayOrder": 4
+  },
+  {
+    "id": "5",
+    "name": "Sports",
+    "slug": "sports",
+    "description": "Sports equipment and fitness gear",
+    "imageUrl": "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400&h=300&fit=crop",
+    "isActive": true,
+    "displayOrder": 5
+  },
+  {
+    "id": "6",
+    "name": "Books",
+    "slug": "books",
+    "description": "Books and reading materials",
+    "imageUrl": "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=400&h=300&fit=crop",
+    "isActive": true,
+    "displayOrder": 6
+  }
+]
+

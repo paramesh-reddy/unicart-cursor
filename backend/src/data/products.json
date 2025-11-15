@@ -1,0 +1,381 @@
+[
+  {
+    "id": "1",
+    "name": "Premium Wireless Headphones",
+    "slug": "premium-wireless-headphones",
+    "description": "Experience crystal-clear audio with our premium wireless headphones. Features active noise cancellation, 30-hour battery life, and premium comfort.",
+    "shortDescription": "Premium wireless headphones with ANC and 30-hour battery",
+    "categoryId": "1",
+    "brand": "AudioTech",
+    "sku": "AT-WH-001",
+    "price": 299.99,
+    "comparePrice": 399.99,
+    "stockQuantity": 45,
+    "lowStockThreshold": 10,
+    "isActive": true,
+    "isFeatured": true,
+    "rating": {
+      "average": 4.8,
+      "count": 234
+    },
+    "badges": ["Featured", "Sale"],
+    "images": [
+      {
+        "id": "img-1",
+        "url": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop",
+        "alt": "Premium Wireless Headphones - Front View",
+        "isPrimary": true,
+        "displayOrder": 0
+      }
+    ],
+    "createdAt": "2024-10-01T10:00:00Z",
+    "updatedAt": "2024-10-09T10:00:00Z"
+  },
+  {
+    "id": "2",
+    "name": "Smart Fitness Watch",
+    "slug": "smart-fitness-watch",
+    "description": "Track your fitness goals with advanced health monitoring, GPS tracking, and smart notifications. Water-resistant up to 50 meters.",
+    "shortDescription": "Advanced fitness tracking with GPS and heart rate monitor",
+    "categoryId": "1",
+    "brand": "FitTech",
+    "sku": "FT-SW-002",
+    "price": 249.99,
+    "stockQuantity": 78,
+    "lowStockThreshold": 10,
+    "isActive": true,
+    "isFeatured": true,
+    "rating": {
+      "average": 4.6,
+      "count": 156
+    },
+    "badges": ["Best Seller"],
+    "images": [
+      {
+        "id": "img-2",
+        "url": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&h=800&fit=crop",
+        "alt": "Smart Fitness Watch",
+        "isPrimary": true,
+        "displayOrder": 0
+      }
+    ],
+    "createdAt": "2024-10-02T10:00:00Z",
+    "updatedAt": "2024-10-09T10:00:00Z"
+  },
+  {
+    "id": "3",
+    "name": "4K Ultra HD Smart TV",
+    "slug": "4k-ultra-hd-smart-tv",
+    "description": "Stunning 65-inch 4K display with HDR10+ support, built-in streaming apps, and voice control. Transform your living room into a cinema.",
+    "shortDescription": "65-inch 4K Smart TV with HDR and voice control",
+    "categoryId": "1",
+    "brand": "VisionMax",
+    "sku": "VM-TV-003",
+    "price": 899.99,
+    "comparePrice": 1199.99,
+    "stockQuantity": 23,
+    "lowStockThreshold": 10,
+    "isActive": true,
+    "isFeatured": true,
+    "rating": {
+      "average": 4.9,
+      "count": 89
+    },
+    "badges": ["Sale", "Featured"],
+    "images": [
+      {
+        "id": "img-3",
+        "url": "https://images.unsplash.com/photo-1593784991095-a205069470b6?w=800&h=800&fit=crop",
+        "alt": "4K Ultra HD Smart TV",
+        "isPrimary": true,
+        "displayOrder": 0
+      }
+    ],
+    "createdAt": "2024-10-03T10:00:00Z",
+    "updatedAt": "2024-10-09T10:00:00Z"
+  },
+  {
+    "id": "4",
+    "name": "Professional Camera Kit",
+    "slug": "professional-camera-kit",
+    "description": "Complete photography kit with 24MP sensor, 4K video, multiple lenses, and pro accessories. Perfect for enthusiasts and professionals.",
+    "shortDescription": "24MP camera with 4K video and professional lenses",
+    "categoryId": "1",
+    "brand": "PhotoPro",
+    "sku": "PP-CAM-004",
+    "price": 1499.99,
+    "stockQuantity": 12,
+    "lowStockThreshold": 10,
+    "isActive": true,
+    "isFeatured": false,
+    "rating": {
+      "average": 4.7,
+      "count": 67
+    },
+    "badges": ["New"],
+    "images": [
+      {
+        "id": "img-4",
+        "url": "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=800&h=800&fit=crop",
+        "alt": "Professional Camera Kit",
+        "isPrimary": true,
+        "displayOrder": 0
+      }
+    ],
+    "createdAt": "2024-10-04T10:00:00Z",
+    "updatedAt": "2024-10-09T10:00:00Z"
+  },
+  {
+    "id": "5",
+    "name": "Gaming Laptop Pro",
+    "slug": "gaming-laptop-pro",
+    "description": "Unleash your gaming potential with RTX 4080, 32GB RAM, 1TB SSD, and 165Hz display. Desktop-grade performance in a portable form.",
+    "shortDescription": "High-performance gaming laptop with RTX 4080",
+    "categoryId": "1",
+    "brand": "GameForce",
+    "sku": "GF-LAP-005",
+    "price": 2299.99,
+    "comparePrice": 2799.99,
+    "stockQuantity": 8,
+    "lowStockThreshold": 10,
+    "isActive": true,
+    "isFeatured": true,
+    "rating": {
+      "average": 4.8,
+      "count": 124
+    },
+    "badges": ["Limited", "Sale"],
+    "images": [
+      {
+        "id": "img-5",
+        "url": "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=800&h=800&fit=crop",
+        "alt": "Gaming Laptop Pro",
+        "isPrimary": true,
+        "displayOrder": 0
+      }
+    ],
+    "createdAt": "2024-10-05T10:00:00Z",
+    "updatedAt": "2024-10-09T10:00:00Z"
+  },
+  {
+    "id": "6",
+    "name": "Wireless Mechanical Keyboard",
+    "slug": "wireless-mechanical-keyboard",
+    "description": "Premium mechanical keyboard with RGB backlighting, hot-swappable switches, and 80-hour battery life. The ultimate typing experience.",
+    "shortDescription": "RGB mechanical keyboard with wireless connectivity",
+    "categoryId": "1",
+    "brand": "KeyMaster",
+    "sku": "KM-KB-006",
+    "price": 149.99,
+    "stockQuantity": 156,
+    "lowStockThreshold": 10,
+    "isActive": true,
+    "isFeatured": false,
+    "rating": {
+      "average": 4.5,
+      "count": 289
+    },
+    "badges": ["Best Seller"],
+    "images": [
+      {
+        "id": "img-6",
+        "url": "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800&h=800&fit=crop",
+        "alt": "Wireless Mechanical Keyboard",
+        "isPrimary": true,
+        "displayOrder": 0
+      }
+    ],
+    "createdAt": "2024-10-06T10:00:00Z",
+    "updatedAt": "2024-10-09T10:00:00Z"
+  },
+  {
+    "id": "7",
+    "name": "Wireless Earbuds Pro",
+    "slug": "wireless-earbuds-pro",
+    "description": "True wireless earbuds with active noise cancellation, 24-hour battery life, and premium sound quality. Perfect for music lovers.",
+    "shortDescription": "ANC wireless earbuds with 24-hour battery",
+    "categoryId": "1",
+    "brand": "AudioTech",
+    "sku": "AT-EB-007",
+    "price": 179.99,
+    "comparePrice": 229.99,
+    "stockQuantity": 92,
+    "lowStockThreshold": 10,
+    "isActive": true,
+    "isFeatured": true,
+    "rating": {
+      "average": 4.7,
+      "count": 412
+    },
+    "badges": ["New", "Sale"],
+    "images": [
+      {
+        "id": "img-7",
+        "url": "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=800&h=800&fit=crop",
+        "alt": "Wireless Earbuds Pro",
+        "isPrimary": true,
+        "displayOrder": 0
+      }
+    ],
+    "createdAt": "2024-10-07T10:00:00Z",
+    "updatedAt": "2024-10-09T10:00:00Z"
+  },
+  {
+    "id": "8",
+    "name": "Portable SSD 1TB",
+    "slug": "portable-ssd-1tb",
+    "description": "Ultra-fast portable SSD with USB-C connectivity, 1TB storage, and shock-resistant design. Transfer speeds up to 1000MB/s.",
+    "shortDescription": "1TB portable SSD with blazing fast speeds",
+    "categoryId": "1",
+    "brand": "StorageTech",
+    "sku": "ST-SSD-008",
+    "price": 129.99,
+    "stockQuantity": 67,
+    "lowStockThreshold": 10,
+    "isActive": true,
+    "isFeatured": false,
+    "rating": {
+      "average": 4.6,
+      "count": 178
+    },
+    "badges": [],
+    "images": [
+      {
+        "id": "img-8",
+        "url": "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=800&h=800&fit=crop",
+        "alt": "Portable SSD 1TB",
+        "isPrimary": true,
+        "displayOrder": 0
+      }
+    ],
+    "createdAt": "2024-10-08T10:00:00Z",
+    "updatedAt": "2024-10-09T10:00:00Z"
+  },
+  {
+    "id": "9",
+    "name": "Designer Leather Jacket",
+    "slug": "designer-leather-jacket",
+    "description": "Premium genuine leather jacket with modern fit. Crafted from high-quality leather with attention to detail. Perfect for any occasion.",
+    "shortDescription": "Genuine leather jacket with modern fit",
+    "categoryId": "2",
+    "brand": "StyleCraft",
+    "sku": "SC-LJ-009",
+    "price": 299.99,
+    "comparePrice": 449.99,
+    "stockQuantity": 34,
+    "lowStockThreshold": 10,
+    "isActive": true,
+    "isFeatured": false,
+    "rating": {
+      "average": 4.8,
+      "count": 89
+    },
+    "badges": ["Sale"],
+    "images": [
+      {
+        "id": "img-9",
+        "url": "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800&h=800&fit=crop",
+        "alt": "Designer Leather Jacket",
+        "isPrimary": true,
+        "displayOrder": 0
+      }
+    ],
+    "createdAt": "2024-09-28T10:00:00Z",
+    "updatedAt": "2024-10-09T10:00:00Z"
+  },
+  {
+    "id": "10",
+    "name": "Running Shoes Elite",
+    "slug": "running-shoes-elite",
+    "description": "High-performance running shoes with advanced cushioning technology. Lightweight, breathable, and designed for maximum comfort.",
+    "shortDescription": "Performance running shoes with advanced cushioning",
+    "categoryId": "5",
+    "brand": "SportMax",
+    "sku": "SM-RS-010",
+    "price": 139.99,
+    "stockQuantity": 145,
+    "lowStockThreshold": 10,
+    "isActive": true,
+    "isFeatured": false,
+    "rating": {
+      "average": 4.7,
+      "count": 256
+    },
+    "badges": ["Best Seller"],
+    "images": [
+      {
+        "id": "img-10",
+        "url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&h=800&fit=crop",
+        "alt": "Running Shoes Elite",
+        "isPrimary": true,
+        "displayOrder": 0
+      }
+    ],
+    "createdAt": "2024-09-25T10:00:00Z",
+    "updatedAt": "2024-10-09T10:00:00Z"
+  },
+  {
+    "id": "11",
+    "name": "Coffee Maker Deluxe",
+    "slug": "coffee-maker-deluxe",
+    "description": "Programmable coffee maker with 12-cup capacity, auto-brew timer, and keep-warm function. Start your day with perfect coffee.",
+    "shortDescription": "12-cup programmable coffee maker",
+    "categoryId": "3",
+    "brand": "BrewMaster",
+    "sku": "BM-CM-011",
+    "price": 89.99,
+    "comparePrice": 119.99,
+    "stockQuantity": 78,
+    "lowStockThreshold": 10,
+    "isActive": true,
+    "isFeatured": false,
+    "rating": {
+      "average": 4.4,
+      "count": 167
+    },
+    "badges": ["Sale"],
+    "images": [
+      {
+        "id": "img-11",
+        "url": "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=800&h=800&fit=crop",
+        "alt": "Coffee Maker Deluxe",
+        "isPrimary": true,
+        "displayOrder": 0
+      }
+    ],
+    "createdAt": "2024-09-20T10:00:00Z",
+    "updatedAt": "2024-10-09T10:00:00Z"
+  },
+  {
+    "id": "12",
+    "name": "Yoga Mat Premium",
+    "slug": "yoga-mat-premium",
+    "description": "Extra thick non-slip yoga mat with carrying strap. Perfect for yoga, pilates, and floor exercises. Eco-friendly materials.",
+    "shortDescription": "Non-slip yoga mat with carrying strap",
+    "categoryId": "5",
+    "brand": "FitLife",
+    "sku": "FL-YM-012",
+    "price": 39.99,
+    "stockQuantity": 203,
+    "lowStockThreshold": 10,
+    "isActive": true,
+    "isFeatured": false,
+    "rating": {
+      "average": 4.6,
+      "count": 334
+    },
+    "badges": [],
+    "images": [
+      {
+        "id": "img-12",
+        "url": "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=800&h=800&fit=crop",
+        "alt": "Yoga Mat Premium",
+        "isPrimary": true,
+        "displayOrder": 0
+      }
+    ],
+    "createdAt": "2024-09-15T10:00:00Z",
+    "updatedAt": "2024-10-09T10:00:00Z"
+  }
+]
+

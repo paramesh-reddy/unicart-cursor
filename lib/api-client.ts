@@ -14,19 +14,20 @@ const normalizeBaseUrl = (url: string | undefined | null): string => {
 
 export const getApiBaseUrl = (): string => {
   const envUrl = normalizeBaseUrl(process.env.NEXT_PUBLIC_API_URL);
+  const defaultBackendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000';
 
   if (typeof window !== 'undefined') {
     if (Capacitor?.isNativePlatform?.()) {
       // Mobile (Capacitor) - must use absolute URL
-      return envUrl || 'https://unicart-cursor5.vercel.app/';
+      return envUrl || defaultBackendUrl + '/';
     }
 
-    // Browser - use relative paths to avoid CORS
-    return '';
+    // Browser - use backend URL from env or default
+    return envUrl || defaultBackendUrl + '/';
   }
 
   // Server-side (SSR/ISR) - fall back to env URL if provided
-  return envUrl;
+  return envUrl || defaultBackendUrl + '/';
 };
 
 export const apiClient = {
