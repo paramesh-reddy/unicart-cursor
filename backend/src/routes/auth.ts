@@ -153,8 +153,9 @@ router.post('/register', async (req, res) => {
       })
     }
 
-    // Handle known Prisma errors (e.g., unique constraint)
-    if ((error as any)?.code === 'P2002') {
+    // Handle Prisma errors
+    const prismaError = error as any
+    if (prismaError?.code === 'P2002') {
       return res.status(400).json({
         error: 'An account with this email already exists'
       })
