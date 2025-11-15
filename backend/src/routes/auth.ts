@@ -161,7 +161,15 @@ router.post('/register', async (req, res) => {
       })
     }
 
-    res.status(500).json({ error: 'Registration failed', details: error ,db_url:process.env.DATABASE_URL})
+    const e: any = error
+    res.status(500).json({
+      error: 'Registration failed',
+      name: e?.name,
+      code: e?.code,
+      message: e?.message,
+      details: { clientVersion: e?.clientVersion, meta: e?.meta },
+      db_url: process.env.DATABASE_URL
+    })
   }
 })
 
