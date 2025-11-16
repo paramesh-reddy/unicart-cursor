@@ -1,10 +1,10 @@
 import { Router } from 'express'
-import { authMiddleware, AuthenticatedRequest } from '../middleware/auth.js'
-import { prisma } from '../lib/prisma.js'
+import { authMiddleware, AuthenticatedRequest } from '../middleware/auth'
+import { prisma } from '../lib/prisma'
 import { z } from 'zod'
-import { extractTokenFromHeader } from '../lib/auth.js'
-import productsData from '../data/products.json' with { type: 'json' }
-import categoriesData from '../data/categories.json' with { type: 'json' }
+import { extractTokenFromHeader } from '../lib/auth'
+import * as productsData from '../data/products.json'
+import * as categoriesData from '../data/categories.json'
 
 const router = Router()
 

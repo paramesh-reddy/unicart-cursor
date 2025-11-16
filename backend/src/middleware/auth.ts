@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
-import { verifyToken, extractTokenFromHeader } from '../lib/auth.js'
-import { prisma } from '../lib/prisma.js'
+import { verifyToken, extractTokenFromHeader } from '../lib/auth'
+import { prisma } from '../lib/prisma'
 
 export interface AuthenticatedRequest extends Request {
   user?: {

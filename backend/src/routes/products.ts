@@ -1,8 +1,8 @@
 import { Router } from 'express'
-import { prisma } from '../lib/prisma.js'
+import { prisma } from '../lib/prisma'
 import { z } from 'zod'
-import productsData from '../data/products.json' with { type: 'json' }
-import categoriesData from '../data/categories.json' with { type: 'json' }
+import * as productsData from '../data/products.json'
+import * as categoriesData from '../data/categories.json'
 
 const router = Router()
 
