@@ -17,6 +17,7 @@
 /backend/pnpm-lock.yaml
 /frontend/.next
 /frontend/android
+/backend/dist
 # Testing
 /coverage
 **/*.test.ts
