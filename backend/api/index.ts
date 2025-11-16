@@ -16,7 +16,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000'
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
-  'https://unicart-cursor5.vercel.app',
+  'https://unicart-frontned1.vercel.app',
   process.env.FRONTEND_URL,
   process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null
 ].filter(Boolean) as string[]

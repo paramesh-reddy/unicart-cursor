@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'UniCart',
   webDir: '.next',
   server: {
-    url: 'https://unicart-cursor5.vercel.app',
+    url: 'https://unicart-frontned1.vercel.app',
     cleartext: false,
     androidScheme: 'https',
     iosScheme: 'https'

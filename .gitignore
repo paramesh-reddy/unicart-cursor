@@ -15,7 +15,8 @@
 /backend/yarn.lock
 /frontend/pnpm-lock.yaml
 /backend/pnpm-lock.yaml
-
+/frontend/.next
+/frontend/android
 # Testing
 /coverage
 **/*.test.ts

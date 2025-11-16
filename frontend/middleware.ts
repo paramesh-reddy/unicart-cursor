@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const allowedOrigins = ["http://localhost:3000", "capacitor://localhost", "http://localhost","https://unicart-cursor5.vercel.app"];
+const allowedOrigins = ["http://localhost:3000", "capacitor://localhost", "http://localhost","https://unicart-frontned1.vercel.app"];
 
 // Protected routes that require authentication
 const protectedRoutes = ["/account", "/checkout", "/wishlist"];

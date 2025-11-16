@@ -171,7 +171,7 @@ Follow these steps once your APIs are working:
 
 1. **Set environment variables**
 
-   Make sure `NEXT_PUBLIC_API_URL` points to your deployed API (for example `https://unicart-cursor5.vercel.app`). Update `.env` (or `.env.production`) and run `npx cap sync` so Capacitor gets the new values.
+   Make sure `NEXT_PUBLIC_API_URL` points to your deployed API (for example `https://unicart-frontned1.vercel.app`). Update `.env` (or `.env.production`) and run `npx cap sync` so Capacitor gets the new values.
 
 2. **Build the web assets**
 
