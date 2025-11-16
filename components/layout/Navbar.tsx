@@ -10,6 +10,8 @@ import { SearchBar } from "@/components/features/SearchBar";
 import { APP_NAME, NAV_LINKS, CATEGORIES } from "@/lib/constants";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { apiurl } from "@/store/constants";
+import axios from "axios";
 
 export function Navbar() {
   const router = useRouter();
@@ -34,26 +36,22 @@ export function Navbar() {
           if (!token) return;
 
           // Fetch wishlist count
-          const wishlistResponse = await fetch('/api/wishlist', {
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
-          if (wishlistResponse.ok) {
-            const wishlistData = await wishlistResponse.json();
-            if (wishlistData.success) {
-              setWishlistCount(wishlistData.wishlist?.length || 0);
-            }
+          const { data: wishlistData } = await axios.get(
+            `${apiurl}/api/wishlist`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          if (wishlistData?.success) {
+            setWishlistCount(wishlistData.wishlist?.length || 0);
           }
 
           // Fetch cart count
-          const cartResponse = await fetch('/api/cart', {
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
-          if (cartResponse.ok) {
-            const cartData = await cartResponse.json();
-            if (cartData.success) {
-              const itemCount = cartData.cart?.items?.reduce((total: number, item: any) => total + item.quantity, 0) || 0;
-              setCartCount(itemCount);
-            }
+          const { data: cartData } = await axios.get(
+            `${apiurl}/api/cart`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          if (cartData?.success) {
+            const itemCount = cartData.cart?.items?.reduce((total: number, item: any) => total + item.quantity, 0) || 0;
+            setCartCount(itemCount);
           }
         } catch (error) {
           console.error('Failed to fetch counts:', error);
@@ -77,26 +75,22 @@ export function Navbar() {
             if (!token) return;
 
             // Fetch wishlist count
-            const wishlistResponse = await fetch('/api/wishlist', {
-              headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (wishlistResponse.ok) {
-              const wishlistData = await wishlistResponse.json();
-              if (wishlistData.success) {
-                setWishlistCount(wishlistData.wishlist?.length || 0);
-              }
+            const { data: wishlistData } = await axios.get(
+              `${apiurl}/api/wishlist`,
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+            if (wishlistData?.success) {
+              setWishlistCount(wishlistData.wishlist?.length || 0);
             }
 
             // Fetch cart count
-            const cartResponse = await fetch('/api/cart', {
-              headers: { 'Authorization': `Bearer ${token}` }
-            });
-            if (cartResponse.ok) {
-              const cartData = await cartResponse.json();
-              if (cartData.success) {
-                const itemCount = cartData.cart?.items?.reduce((total: number, item: any) => total + item.quantity, 0) || 0;
-                setCartCount(itemCount);
-              }
+            const { data: cartData } = await axios.get(
+              `${apiurl}/api/cart`,
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+            if (cartData?.success) {
+              const itemCount = cartData.cart?.items?.reduce((total: number, item: any) => total + item.quantity, 0) || 0;
+              setCartCount(itemCount);
             }
           } catch (error) {
             console.error('Failed to fetch counts:', error);

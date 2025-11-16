@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/Card";
 import { formatPrice } from "@/lib/utils";
 import { FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
 import type { CartItem } from "@/types";
+import { apiurl } from "@/store/constants";
 
 const REQUIRE_AUTH =
   process.env.NEXT_PUBLIC_REQUIRE_AUTH === "true";
@@ -48,7 +49,7 @@ export default function CartPage() {
           return;
         }
 
-        const response = await fetch('/api/cart', {
+        const response = await fetch(`${apiurl}/api/cart`, {
           headers: authHeaders
         });
 
@@ -84,7 +85,7 @@ export default function CartPage() {
       const authHeaders = buildAuthHeaders(true);
       if (authHeaders === null) return;
 
-      const response = await fetch(`/api/cart/${itemId}`, {
+      const response = await fetch(`${apiurl}/api/cart/${itemId}`, {
         method: 'PUT',
         headers: {
           ...authHeaders,
@@ -95,7 +96,7 @@ export default function CartPage() {
 
       if (response.ok) {
         // Refresh cart data
-        const cartResponse = await fetch('/api/cart', {
+        const cartResponse = await fetch(`${apiurl}/api/cart`, {
           headers: authHeaders
         });
         if (cartResponse.ok) {
@@ -120,7 +121,7 @@ export default function CartPage() {
       const authHeaders = buildAuthHeaders(true);
       if (authHeaders === null) return;
 
-      const response = await fetch(`/api/cart/${itemId}`, {
+      const response = await fetch(`${apiurl}/api/cart/${itemId}`, {
         method: 'PUT',
         headers: {
           ...authHeaders,
@@ -131,7 +132,7 @@ export default function CartPage() {
 
       if (response.ok) {
         // Refresh cart data
-        const cartResponse = await fetch('/api/cart', {
+        const cartResponse = await fetch(`${apiurl}/api/cart`, {
           headers: authHeaders
         });
         if (cartResponse.ok) {
@@ -156,7 +157,7 @@ export default function CartPage() {
       const authHeaders = buildAuthHeaders(true);
       if (authHeaders === null) return;
 
-      const response = await fetch(`/api/cart/${itemId}`, {
+      const response = await fetch(`${apiurl}/api/cart/${itemId}`, {
         method: 'DELETE',
         headers: authHeaders
       });
@@ -180,7 +181,7 @@ export default function CartPage() {
         const authHeaders = buildAuthHeaders(true);
         if (authHeaders === null) return;
 
-        await fetch(`/api/cart/${item.productId}`, {
+        await fetch(`${apiurl}/api/cart/${item.productId}`, {
           method: 'DELETE',
           headers: authHeaders
         });
@@ -351,7 +352,7 @@ export default function CartPage() {
                           {/* Quantity Controls */}
                           <div className="flex items-center border border-gray-300 rounded-md">
                             <button
-                              onClick={() => handleDecrement(item.id, item.quantity)}
+                              onClick={() => handleDecrement(item.productId, item.quantity)}
                               disabled={item.quantity <= 1}
                               className={`p-2 hover:bg-gray-100 transition-colors ${
                                 item.quantity <= 1 
@@ -368,7 +369,7 @@ export default function CartPage() {
                             </span>
                             
                             <button
-                              onClick={() => handleIncrement(item.id, item.quantity)}
+                              onClick={() => handleIncrement(item.productId, item.quantity)}
                               className="p-2 hover:bg-gray-100 hover:text-primary-500 transition-colors"
                               aria-label="Increase quantity"
                             >
@@ -384,7 +385,7 @@ export default function CartPage() {
                           {/* Actions */}
                           <div className="flex items-center gap-2 ml-auto">
                             <button
-                              onClick={() => handleRemove(item.id)}
+                              onClick={() => handleRemove(item.productId)}
                               className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 rounded-md transition-colors"
                               aria-label="Remove item"
                             >

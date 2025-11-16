@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice, calculateDiscount } from "@/lib/utils";
 import type { Product } from "@/types";
+import { apiurl } from "@/store/constants";
 
 const REQUIRE_AUTH =
   process.env.NEXT_PUBLIC_REQUIRE_AUTH === "true";
@@ -52,7 +53,7 @@ export default function WishlistPage() {
           return;
         }
 
-        const response = await fetch('/api/wishlist', {
+        const response = await fetch(`${apiurl}/api/wishlist`, {
           headers: authHeaders
         });
 
@@ -77,7 +78,7 @@ export default function WishlistPage() {
       const authHeaders = buildAuthHeaders(true);
       if (authHeaders === null) return;
 
-      const response = await fetch(`/api/wishlist/${productId}`, {
+      const response = await fetch(`${apiurl}/api/wishlist/${productId}`, {
         method: 'DELETE',
         headers: authHeaders
       });
@@ -96,7 +97,7 @@ export default function WishlistPage() {
       const authHeaders = buildAuthHeaders(true);
       if (authHeaders === null) return;
 
-      const response = await fetch('/api/cart', {
+      const response = await fetch(`${apiurl}/api/cart`, {
         method: 'POST',
         headers: {
           ...authHeaders,
@@ -129,7 +130,7 @@ export default function WishlistPage() {
 
       // Remove all items one by one
       for (const item of wishlistItems) {
-        await fetch(`/api/wishlist/${item.product.id}`, {
+        await fetch(`${apiurl}/api/wishlist/${item.product.id}`, {
           method: 'DELETE',
           headers: authHeaders
         });
@@ -427,7 +428,7 @@ export default function WishlistPage() {
                     for (const item of wishlistItems) {
                       if ((item.product.stockQuantity || 0) > 0) {
                         try {
-                          const response = await fetch('/api/cart', {
+                          const response = await fetch(`${apiurl}/api/cart`, {
                             method: 'POST',
                             headers: {
                               'Authorization': `Bearer ${token}`,

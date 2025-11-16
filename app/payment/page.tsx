@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice } from "@/lib/utils";
 import type { CartItem } from "@/types";
+import { apiurl } from "@/store/constants";
 
 interface PaymentFormData {
   cardNumber: string;
@@ -39,7 +40,7 @@ export default function PaymentPage() {
           return;
         }
 
-        const response = await fetch('/api/cart', {
+        const response = await fetch(`${apiurl}/api/cart`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }

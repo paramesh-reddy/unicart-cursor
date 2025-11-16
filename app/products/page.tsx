@@ -16,6 +16,7 @@ import categoriesData from "@/data/categories.json";
 import { ProductCard } from "@/components/features/ProductCard";
 import { SORT_OPTIONS } from "@/lib/constants";
 import type { Product, Category } from "@/types";
+import { apiurl } from "@/store/constants";
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
@@ -44,8 +45,8 @@ export default function ProductsPage() {
         
         // Fetch products and categories in parallel
         const [productsResponse, categoriesResponse] = await Promise.all([
-          fetch('/api/products'),
-          fetch('/api/categories')
+          fetch(`${apiurl}/api/products`),
+          fetch(`${apiurl}/api/categories`)
         ]);
 
         if (productsResponse.ok) {

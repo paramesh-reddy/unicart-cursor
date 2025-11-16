@@ -6,6 +6,7 @@ import Link from "next/link";
 import { CheckCircle, ArrowRight, Package, Mail } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { apiurl } from "@/store/constants";
 
 export default function OrderSuccessPage() {
   const router = useRouter();
@@ -16,13 +17,23 @@ export default function OrderSuccessPage() {
       try {
         const token = localStorage.getItem('auth_token');
         if (token) {
-          // Clear cart items
-          const response = await fetch('/api/cart', {
-            method: 'DELETE',
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
+          // Fetch current cart and remove items one by one (backend expects productId)
+          const cartRes = await fetch(`${apiurl}/api/cart`, {
+            headers: { 'Authorization': `Bearer ${token}` }
           });
+          if (cartRes.ok) {
+            const cartData = await cartRes.json();
+            const items = cartData?.cart?.items || [];
+            for (const item of items) {
+              const productId = item.productId || item.product?.id;
+              if (productId) {
+                await fetch(`${apiurl}/api/cart/${productId}`, {
+                  method: 'DELETE',
+                  headers: { 'Authorization': `Bearer ${token}` }
+                });
+              }
+            }
+          }
         }
       } catch (error) {
         console.error('Failed to clear cart:', error);

@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">UniCart</string>
-    <string name="title_activity_main">UniCart</string>
-    <string name="package_name">com.unicart.app</string>
-    <string name="custom_url_scheme">com.unicart.app</string>
-</resources>

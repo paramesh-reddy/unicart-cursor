@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/Badge";
 import { useAuthStore } from "@/store/authStore";
 import { formatPrice } from "@/lib/utils";
 import type { CartItem } from "@/types";
+import { apiurl } from "@/store/constants";
 
 interface ShippingFormData {
   firstName: string;
@@ -66,7 +67,7 @@ export default function CheckoutPage() {
         let itemCount: number = 0;
         if (token) {
           try {
-            const cartResponse = await fetch('/api/cart', {
+            const cartResponse = await fetch(`${apiurl}/api/cart`, {
               headers: { 'Authorization': `Bearer ${token}` }
             });
             if (cartResponse.ok) {

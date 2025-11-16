@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { User } from "@/types";
 import { apiurl } from "@/store/constants";
+import axios from "axios";
 interface AuthStore {
   user: User | null;
   isAuthenticated: boolean;
@@ -25,18 +26,11 @@ export const useAuthStore = create<AuthStore>()(
         try {
           set({ isLoading: true });
           
-          const response = await fetch(
+          const { data } = await axios.post(
             `${apiurl}/api/auth/login`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ email, password }),
-            }
+            { email, password },
+            { headers: { 'Content-Type': 'application/json' } }
           );
-          
-          const data = await response.json();
           
           if (data.success) {
             // Store token and user data
@@ -71,18 +65,11 @@ export const useAuthStore = create<AuthStore>()(
           set({ isLoading: true });
           const { email, password, firstName, lastName } = data;
           
-          const response = await fetch(
+          const { data: result } = await axios.post(
             `${apiurl}/api/auth/register`,
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ email, password, firstName, lastName }),
-            }
+            { email, password, firstName, lastName },
+            { headers: { 'Content-Type': 'application/json' } }
           );
-          
-          const result = await response.json();
           
           if (result.success) {
             // Store token and user data

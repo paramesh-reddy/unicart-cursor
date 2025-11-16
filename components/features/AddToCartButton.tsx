@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ShoppingCart, Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import type { Product, ProductVariant } from "@/types";
+import { apiurl } from "@/store/constants";
 
 const REQUIRE_AUTH =
   process.env.NEXT_PUBLIC_REQUIRE_AUTH === "true";
@@ -41,7 +42,7 @@ export function AddToCartButton({
         return;
       }
 
-      const response = await fetch('/api/cart', {
+      const response = await fetch(`${apiurl}/api/cart`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

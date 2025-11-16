@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice, calculateDiscount } from "@/lib/utils";
 import type { Product } from "@/types";
+import { apiurl } from "@/store/constants";
 
 const REQUIRE_AUTH =
   process.env.NEXT_PUBLIC_REQUIRE_AUTH === "true";
@@ -47,7 +48,7 @@ export function ProductCard({
 
       if (isWishlisted) {
         // Remove from wishlist
-        const response = await fetch(`/api/wishlist/${product.id}`, {
+        const response = await fetch(`${apiurl}/api/wishlist/${product.id}`, {
           method: 'DELETE',
           headers: {
             ...(token ? { 'Authorization': `Bearer ${token}` } : {})
@@ -63,7 +64,7 @@ export function ProductCard({
         }
       } else {
         // Add to wishlist
-        const response = await fetch('/api/wishlist', {
+        const response = await fetch(`${apiurl}/api/wishlist`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

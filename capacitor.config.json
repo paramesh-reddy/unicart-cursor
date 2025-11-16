@@ -1,6 +1,0 @@
-{
-  "appId": "com.example.myapp",
-  "appName": "MyApp",
-  "webDir": ".next",
-  "bundledWebRuntime":false
-}

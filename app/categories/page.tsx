@@ -12,6 +12,7 @@ import { useCartStore } from "@/store/cartStore";
 import categoriesData from "@/data/categories.json";
 import productsData from "@/data/products.json";
 import type { Category, Product } from "@/types";
+import { apiurl } from "@/store/constants";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -26,7 +27,7 @@ export default function CategoriesPage() {
     const fetchData = async () => {
       try {
         // Fetch categories from API
-        const categoriesResponse = await fetch('/api/categories');
+        const categoriesResponse = await fetch(`${apiurl}/api/categories`);
         if (categoriesResponse.ok) {
           const categoriesResponseData = await categoriesResponse.json();
           if (categoriesResponseData.success && categoriesResponseData.categories && Array.isArray(categoriesResponseData.categories)) {
@@ -45,7 +46,7 @@ export default function CategoriesPage() {
         }
 
         // Fetch ALL products from API (use a high limit to get all products)
-        const productsResponse = await fetch('/api/products?limit=1000');
+        const productsResponse = await fetch(`${apiurl}/api/products?limit=1000`);
         if (productsResponse.ok) {
           const productsResponseData = await productsResponse.json();
           if (productsResponseData.success && productsResponseData.products && Array.isArray(productsResponseData.products)) {

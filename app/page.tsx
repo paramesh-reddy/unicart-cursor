@@ -10,6 +10,7 @@ import productsData from "@/data/products.json";
 import categoriesData from "@/data/categories.json";
 import { useCart } from "@/hooks/useCart";
 import type { Product } from "@/types";
+import { apiurl } from "@/store/constants";
 
 export default function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
@@ -26,8 +27,8 @@ export default function HomePage() {
         
         // Fetch featured products and categories
         const [productsResponse, categoriesResponse] = await Promise.all([
-          fetch('/api/products?featured=true&limit=6'),
-          fetch('/api/categories')
+          fetch(`${apiurl}/api/products?featured=true&limit=6`),
+          fetch(`${apiurl}/api/categories`)
         ]);
 
         if (productsResponse.ok) {

@@ -2,8 +2,8 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { CartItem, Product, ProductVariant } from "@/types";
 import { CART_STORAGE_KEY, TAX_RATE, FREE_SHIPPING_THRESHOLD } from "@/lib/constants";
-import { apiClient } from "@/lib/api-client";
 import { apiurl } from "@/store/constants";
+import axios from "axios";
 
 interface CartStore {
   items: CartItem[];
@@ -31,11 +31,25 @@ export const useCartStore = create<CartStore>()(
       items: [],
       isLoading: false,
 
+      // Helper to return auth header if token exists
+      // This mirrors the previous apiClient behavior
+      // by attaching Authorization automatically when available.
+      // Note: This function is defined inline to avoid
+      // introducing a new shared module per user request.
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // @ts-ignore - used within methods below
+      _getAuthHeaders: (): Record<string, string> => {
+        if (typeof window === "undefined") return {};
+        const token = localStorage.getItem("auth_token");
+        return token ? { Authorization: `Bearer ${token}` } : {};
+      },
+
       fetchCart: async () => {
         try {
-          const data = await apiClient.get(`${apiurl}/api/cart`);
-          if (data.success) {
-            set({ items: data.cart.items || [] });
+          const headers = (get() as any)._getAuthHeaders?.() || {};
+          const { data } = await axios.get(`${apiurl}/api/cart`, { headers });
+          if (data?.success) {
+            set({ items: data.cart?.items || [] });
           }
         } catch (error) {
           console.error('Failed to fetch cart:', error);
@@ -45,12 +59,17 @@ export const useCartStore = create<CartStore>()(
       addItem: async (product, quantity = 1, variant) => {
         try {
           set({ isLoading: true });
-          const data = await apiClient.post(`${apiurl}/api/cart`, {
-            productId: product.id,
-            quantity: quantity
-          });
+          const headers = (get() as any)._getAuthHeaders?.() || {};
+          const { data } = await axios.post(
+            `${apiurl}/api/cart`,
+            {
+              productId: product.id,
+              quantity: quantity,
+            },
+            { headers }
+          );
 
-          if (data.success) {
+          if (data?.success) {
             // Refresh cart from server
             await get().fetchCart();
           }
@@ -68,7 +87,8 @@ export const useCartStore = create<CartStore>()(
           const item = get().items.find(item => item.id === itemId);
           if (!item) return;
 
-          await apiClient.delete(`${apiurl}/api/cart/${item.productId}`);
+          const headers = (get() as any)._getAuthHeaders?.() || {};
+          await axios.delete(`${apiurl}/api/cart/${item.productId}`, { headers });
           
           // Refresh cart from server
           await get().fetchCart();
@@ -88,7 +108,12 @@ export const useCartStore = create<CartStore>()(
           const item = get().items.find(item => item.id === itemId);
           if (!item) return;
 
-          await apiClient.put(`${apiurl}/api/cart/${item.productId}`, { quantity });
+          const headers = (get() as any)._getAuthHeaders?.() || {};
+          await axios.put(
+            `${apiurl}/api/cart/${item.productId}`,
+            { quantity },
+            { headers }
+          );
 
           // Refresh cart from server
           await get().fetchCart();
@@ -104,8 +129,9 @@ export const useCartStore = create<CartStore>()(
           set({ isLoading: true });
           // Remove all items one by one
           const items = get().items;
+          const headers = (get() as any)._getAuthHeaders?.() || {};
           for (const item of items) {
-            await apiClient.delete(`${apiurl}/api/cart/${item.productId}`);
+            await axios.delete(`${apiurl}/api/cart/${item.productId}`, { headers });
           }
 
           // Refresh cart from server

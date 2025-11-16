@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card } from "@/components/ui/Card";
 import { useAuthStore } from "@/store/authStore";
+import { apiurl } from "@/store/constants";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -47,6 +48,7 @@ export default function LoginPage() {
     }
 
     try {
+      console.log(email, password,apiurl,'testinggggg')
       const result = await login(email, password);
       
       if (result.success) {
@@ -73,7 +75,7 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-500 text-white mb-4">
             <LogIn className="w-8 h-8" />
           </div>
-          <h1 className="text-3xl font-bold mb-2">Welcome Back</h1>
+          <h1 className="text-3xl font-bold mb-2">Welcome Back testing</h1>
           <p className="text-gray-600">Sign in to your UniCart account</p>
         </div>
 
