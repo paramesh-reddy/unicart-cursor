@@ -10,48 +10,19 @@ import wishlistRoutes from '../src/routes/wishlist.js'
 dotenv.config()
 
 const app = express()
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000'
-
-// Allowed origins - support both local development and production
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:3001',
-  'https://unicart-frontned1.vercel.app',
-  process.env.FRONTEND_URL,
-  process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null
-].filter(Boolean) as string[]
-
-// CORS configuration
+// CORS configuration - permissive to avoid preflight failures in serverless
 const corsOptions: cors.CorsOptions = {
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, Postman, or curl)
-    if (!origin) {
-      return callback(null, true)
-    }
-    
-    // Check if origin is in allowed list
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true)
-    } else {
-      // In development, allow localhost with any port
-      if (process.env.NODE_ENV !== 'production' && origin.startsWith('http://localhost:')) {
-        callback(null, true)
-      } else {
-        // Log for debugging
-        console.log(`CORS blocked origin: ${origin}`)
-        callback(new Error('Not allowed by CORS'))
-      }
-    }
-  },
+  origin: true, // reflect request Origin
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   exposedHeaders: ['Authorization'],
   preflightContinue: false,
-  optionsSuccessStatus: 204
+  optionsSuccessStatus: 204,
 }
 
 app.use(cors(corsOptions))
+app.options('*', cors(corsOptions))
 app.use(express.json())
 
 // Health check
