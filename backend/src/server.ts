@@ -1,11 +1,11 @@
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import authRoutes from './routes/auth.js'
-import productRoutes from './routes/products.js'
-import categoryRoutes from './routes/categories.js'
-import cartRoutes from './routes/cart.js'
-import wishlistRoutes from './routes/wishlist.js'
+import authRoutes from './routes/auth'
+import productRoutes from './routes/products'
+import categoryRoutes from './routes/categories'
+import cartRoutes from './routes/cart'
+import wishlistRoutes from './routes/wishlist'
 
 dotenv.config()
 
