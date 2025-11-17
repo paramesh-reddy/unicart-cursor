@@ -22,9 +22,8 @@ type SampleCartItem = {
   quantity: number
 }
 
-const SAMPLE_MODE =
-  process.env.NEXT_PUBLIC_SAMPLE_MODE !== 'false' ||
-  !process.env.DATABASE_URL
+// Use database mode if DATABASE_URL is set, otherwise use sample mode
+const SAMPLE_MODE = !process.env.DATABASE_URL || process.env.NEXT_PUBLIC_SAMPLE_MODE === 'true'
 
 const rawSampleProducts = Array.isArray(productsData) ? productsData : []
 const rawSampleCategories = Array.isArray(categoriesData) ? categoriesData : []
