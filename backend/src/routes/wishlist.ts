@@ -209,7 +209,85 @@ router.post('/', async (req, res, next) => {
         return res.status(400).json({ error: 'Product ID is required' })
       }
 
-      const product = normalizeSampleProduct(getSampleProduct(productId))
+      let product = normalizeSampleProduct(getSampleProduct(productId))
+
+      // If product not found in sample data and DATABASE_URL exists, try database
+      if (!product && process.env.DATABASE_URL) {
+        try {
+          const dbProduct = await prisma.product.findFirst({
+            where: { id: productId, isActive: true },
+            select: { id: true }
+          })
+          
+          if (dbProduct) {
+            // Use database route instead
+            return authMiddleware(req as AuthenticatedRequest, res, async () => {
+              try {
+                const authReq = req as AuthenticatedRequest
+                const { productId } = req.body
+
+                if (!productId) {
+                  return res.status(400).json({ error: 'Product ID is required' })
+                }
+
+                // Check if product exists
+                const product = await prisma.product.findFirst({
+                  where: { id: productId, isActive: true },
+                  select: { id: true }
+                })
+
+                if (!product) {
+                  return res.status(404).json({ error: 'Product not found' })
+                }
+
+                // Check if already in wishlist
+                const existingItem = await prisma.wishlistItem.findUnique({
+                  where: {
+                    userId_productId: {
+                      userId: authReq.user!.id,
+                      productId: productId
+                    }
+                  }
+                })
+
+                if (existingItem) {
+                  return res.status(400).json({ error: 'Product already in wishlist' })
+                }
+
+                // Add to wishlist
+                const wishlistItem = await prisma.wishlistItem.create({
+                  data: {
+                    userId: authReq.user!.id,
+                    productId: productId
+                  },
+                  include: {
+                    product: {
+                      include: {
+                        images: {
+                          where: { isPrimary: true },
+                          take: 1
+                        }
+                      }
+                    }
+                  }
+                })
+
+                res.json({
+                  success: true,
+                  message: 'Product added to wishlist',
+                  item: wishlistItem
+                })
+
+              } catch (error) {
+                console.error('Add to wishlist error:', error)
+                res.status(500).json({ error: 'Failed to add to wishlist' })
+              }
+            })
+          }
+        } catch (dbError) {
+          console.error('Database fallback error:', dbError)
+        }
+      }
 
       if (!product) {
         return res.status(404).json({ error: 'Product not found' })

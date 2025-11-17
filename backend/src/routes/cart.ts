@@ -202,7 +202,175 @@ router.post('/', async (req, res, next) => {
     try {
       const { productId, quantity } = addToCartSchema.parse(req.body)
 
-      const product = normalizeSampleProduct(getSampleProduct(productId))
+      let product = normalizeSampleProduct(getSampleProduct(productId))
+
+      // If product not found in sample data and DATABASE_URL exists, try database
+      if (!product && process.env.DATABASE_URL) {
+        try {
+          const dbProduct = await prisma.product.findFirst({
+            where: { id: productId, isActive: true },
+            select: { id: true, price: true, stockQuantity: true, trackQuantity: true }
+          })
+          
+          if (dbProduct) {
+            // Use database route instead
+            return authMiddleware(req as AuthenticatedRequest, res, async () => {
+              try {
+                const authReq = req as AuthenticatedRequest
+                const { productId, quantity } = addToCartSchema.parse(req.body)
+
+                // Get product details
+                const product = await prisma.product.findFirst({
+                  where: { id: productId, isActive: true },
+                  select: { id: true, price: true, stockQuantity: true, trackQuantity: true }
+                })
+
+                if (!product) {
+                  return res.status(404).json({ error: 'Product not found' })
+                }
+
+                // Check stock availability
+                if (product.trackQuantity && product.stockQuantity < quantity) {
+                  return res.status(400).json({ error: 'Insufficient stock available' })
+                }
+
+                // Check if item already exists in cart
+                const existingItem = await prisma.cartItem.findUnique({
+                  where: {
+                    userId_productId: {
+                      userId: authReq.user!.id,
+                      productId: productId
+                    }
+                  }
+                })
+
+                if (existingItem) {
+                  // Update quantity
+                  const newQuantity = existingItem.quantity + quantity
+                  
+                  if (product.trackQuantity && product.stockQuantity < newQuantity) {
+                    return res.status(400).json({ error: 'Insufficient stock available' })
+                  }
+
+                  const updatedItem = await prisma.cartItem.update({
+                    where: { id: existingItem.id },
+                    data: { 
+                      quantity: newQuantity,
+                      price: product.price
+                    },
+                    include: {
+                      product: {
+                        select: {
+                          id: true,
+                          name: true,
+                          slug: true,
+                          description: true,
+                          shortDescription: true,
+                          brand: true,
+                          sku: true,
+                          price: true,
+                          comparePrice: true,
+                          costPrice: true,
+                          stockQuantity: true,
+                          lowStockThreshold: true,
+                          weight: true,
+                          dimensions: true,
+                          isActive: true,
+                          isFeatured: true,
+                          isDigital: true,
+                          requiresShipping: true,
+                          trackQuantity: true,
+                          allowBackorder: true,
+                          metaTitle: true,
+                          metaDescription: true,
+                          tags: true,
+                          createdAt: true,
+                          updatedAt: true,
+                          images: {
+                            orderBy: { sortOrder: 'asc' },
+                            take: 1
+                          }
+                        }
+                      }
+                    }
+                  })
+
+                  return res.json({
+                    success: true,
+                    message: 'Cart updated successfully',
+                    item: updatedItem
+                  })
+                } else {
+                  // Add new item
+                  const newItem = await prisma.cartItem.create({
+                    data: {
+                      userId: authReq.user!.id,
+                      productId: productId,
+                      quantity: quantity,
+                      price: product.price
+                    },
+                    include: {
+                      product: {
+                        select: {
+                          id: true,
+                          name: true,
+                          slug: true,
+                          description: true,
+                          shortDescription: true,
+                          brand: true,
+                          sku: true,
+                          price: true,
+                          comparePrice: true,
+                          costPrice: true,
+                          stockQuantity: true,
+                          lowStockThreshold: true,
+                          weight: true,
+                          dimensions: true,
+                          isActive: true,
+                          isFeatured: true,
+                          isDigital: true,
+                          requiresShipping: true,
+                          trackQuantity: true,
+                          allowBackorder: true,
+                          metaTitle: true,
+                          metaDescription: true,
+                          tags: true,
+                          createdAt: true,
+                          updatedAt: true,
+                          images: {
+                            orderBy: { sortOrder: 'asc' },
+                            take: 1
+                          }
+                        }
+                      }
+                    }
+                  })
+
+                  return res.json({
+                    success: true,
+                    message: 'Item added to cart successfully',
+                    item: newItem
+                  })
+                }
+
+              } catch (error) {
+                console.error('Add to cart error:', error)
+                
+                if (error instanceof z.ZodError) {
+                  return res.status(400).json({
+                    error: 'Validation failed',
+                    details: error.errors
+                  })
+                }
+
+                return res.status(500).json({ error: 'Failed to add item to cart' })
+              }
+            })
+          }
+        } catch (dbError) {
+          console.error('Database fallback error:', dbError)
+        }
+      }
 
       if (!product) {
         return res.status(404).json({ error: 'Product not found' })
