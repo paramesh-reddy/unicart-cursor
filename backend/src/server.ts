@@ -6,6 +6,7 @@ import productRoutes from './routes/products'
 import categoryRoutes from './routes/categories'
 import cartRoutes from './routes/cart'
 import wishlistRoutes from './routes/wishlist'
+import orderRoutes from './routes/orders'
 
 dotenv.config()
 
@@ -36,6 +37,7 @@ app.use('/api/products', productRoutes)
 app.use('/api/categories', categoryRoutes)
 app.use('/api/cart', cartRoutes)
 app.use('/api/wishlist', wishlistRoutes)
+app.use('/api/orders', orderRoutes)
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

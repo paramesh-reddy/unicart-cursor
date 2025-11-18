@@ -80,7 +80,7 @@ export default function OrderSuccessPage() {
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Button asChild>
-                <Link href="/orders">
+                <Link href="/account/orders">
                   View Order Details
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
