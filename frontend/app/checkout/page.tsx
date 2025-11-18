@@ -48,6 +48,36 @@ export default function CheckoutPage() {
   });
   const [errors, setErrors] = useState<Partial<ShippingFormData>>({});
 
+  // Fetch cart items for order summary
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+          setCartLoading(false);
+          return;
+        }
+
+        const response = await fetch(`${apiurl}/api/cart`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setItems(data.cart.items || []);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch cart:', error);
+      } finally {
+        setCartLoading(false);
+      }
+    };
+
+    fetchCart();
+  }, []);
+
   // Check authentication and cart before allowing checkout
   useEffect(() => {
     const checkAccess = async () => {
@@ -137,8 +167,17 @@ export default function CheckoutPage() {
     }
     if (!formData.pincode.trim()) {
       newErrors.pincode = "ZIP/Postal code is required";
-    } else if (!/^\d{5}(-\d{4})?$/.test(formData.pincode)) {
-      newErrors.pincode = "Please enter a valid ZIP code";
+    } else {
+      // Accept various postal code formats:
+      // - US: 5 digits or 5-4 format (12345 or 12345-6789)
+      // - India: 6 digits (515001)
+      // - Canada: A1A 1A1 format (alphanumeric)
+      // - UK: Various formats (SW1A 1AA, etc.)
+      // For now, accept 4-10 alphanumeric characters with optional spaces/hyphens
+      const postalCodeRegex = /^[A-Z0-9\s-]{4,10}$/i;
+      if (!postalCodeRegex.test(formData.pincode.trim())) {
+        newErrors.pincode = "Please enter a valid postal code";
+      }
     }
 
     setErrors(newErrors);
@@ -434,38 +473,51 @@ export default function CheckoutPage() {
               </div>
 
               {/* Cart Items */}
-              <div className="space-y-4 mb-6">
-                {items.map((item) => (
-                  <div key={item.id} className="flex gap-3">
-                    <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                      <Image
-                        src={item.product.images[0]?.url || "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop&auto=format"}
-                        alt={item.product.name}
-                        fill
-                        className="object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop&auto=format";
-                        }}
-                      />
-                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary-500 text-white text-xs rounded-full flex items-center justify-center">
-                        {item.quantity}
+              {cartLoading ? (
+                <div className="space-y-4 mb-6">
+                  <div className="text-sm text-gray-500">Loading cart items...</div>
+                </div>
+              ) : items.length === 0 ? (
+                <div className="space-y-4 mb-6">
+                  <div className="text-sm text-gray-500">No items in cart</div>
+                </div>
+              ) : (
+                <div className="space-y-4 mb-6">
+                  {items.map((item) => {
+                    const itemPrice = typeof item.price === 'number' ? item.price : Number(item.price);
+                    return (
+                      <div key={item.id} className="flex gap-3">
+                        <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                          <Image
+                            src={item.product.images?.[0]?.url || "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop&auto=format"}
+                            alt={item.product.name}
+                            fill
+                            className="object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop&auto=format";
+                            }}
+                          />
+                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary-500 text-white text-xs rounded-full flex items-center justify-center">
+                            {item.quantity}
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-gray-900 text-sm line-clamp-2">
+                            {item.product.name}
+                          </h4>
+                          <p className="text-sm text-gray-600">
+                            {item.variant ? `${item.variant.name} • ` : ""}
+                            {formatPrice(itemPrice)}
+                          </p>
+                        </div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {formatPrice(itemPrice * item.quantity)}
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-gray-900 text-sm line-clamp-2">
-                        {item.product.name}
-                      </h4>
-                      <p className="text-sm text-gray-600">
-                        {item.variant ? `${item.variant.name} • ` : ""}
-                        {formatPrice(item.product.price)}
-                      </p>
-                    </div>
-                    <div className="text-sm font-medium text-gray-900">
-                      {formatPrice(item.product.price * item.quantity)}
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
 
               {/* Order Totals */}
               <div className="space-y-3 border-t pt-4">
