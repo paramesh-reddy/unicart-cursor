@@ -6,7 +6,7 @@
     "dev": "next dev",
     "dev:backend": "cd backend && npm run dev",
     "dev:all": "concurrently \"npm run dev\" \"npm run dev:backend\"",
-    "build": "prisma generate && next build",
+    "build": "PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1 prisma generate && next build",
     "build:backend": "cd backend && npm run build",
     "start": "next start",
     "start:backend": "cd backend && npm start",
@@ -25,7 +25,7 @@
     "db:migrate:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "postinstall": "prisma generate",
+    "postinstall": "node scripts/postinstall.js",
     "export": "next export"
   },
   "dependencies": {

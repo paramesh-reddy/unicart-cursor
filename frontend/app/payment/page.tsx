@@ -75,7 +75,6 @@ export default function PaymentPage() {
     
     // Simulate payment processing
     setTimeout(() => {
-      alert('Payment successful! Order placed.');
       // Clear cart and redirect to success page
       router.push('/order-success');
     }, 2000);
