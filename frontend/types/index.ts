@@ -123,8 +123,8 @@ export interface Order {
   shippingAmount: number;
   discountAmount: number;
   totalAmount: number;
-  shippingAddress: Address;
-  billingAddress?: Address;
+  shippingAddress: Address | Record<string, any>;
+  billingAddress?: Address | Record<string, any>;
   trackingNumber?: string;
   shippingCarrier?: string;
   shippedAt?: string;

@@ -267,16 +267,20 @@ export default function OrdersPage() {
                     <h4 className="font-semibold text-gray-900 mb-2">Shipping Address</h4>
                     {order.shippingAddress && (
                       <div className="text-sm text-gray-600">
-                        <p>{order.shippingAddress.firstName} {order.shippingAddress.lastName}</p>
-                        <p>{order.shippingAddress.address}</p>
-                        {order.shippingAddress.apartment && (
-                          <p>{order.shippingAddress.apartment}</p>
+                        <p>
+                          {(order.shippingAddress as any).firstName || (order.shippingAddress as any).fullName 
+                            ? `${(order.shippingAddress as any).firstName || ''} ${(order.shippingAddress as any).lastName || ''}`.trim() || (order.shippingAddress as any).fullName
+                            : 'N/A'}
+                        </p>
+                        <p>{(order.shippingAddress as any).address || (order.shippingAddress as any).addressLine1}</p>
+                        {((order.shippingAddress as any).apartment || (order.shippingAddress as any).addressLine2) && (
+                          <p>{(order.shippingAddress as any).apartment || (order.shippingAddress as any).addressLine2}</p>
                         )}
                         <p>
-                          {order.shippingAddress.city}, {order.shippingAddress.state}{' '}
-                          {order.shippingAddress.pincode}
+                          {(order.shippingAddress as any).city}, {(order.shippingAddress as any).state}{' '}
+                          {(order.shippingAddress as any).pincode || (order.shippingAddress as any).postalCode}
                         </p>
-                        <p>{order.shippingAddress.country}</p>
+                        <p>{(order.shippingAddress as any).country}</p>
                       </div>
                     )}
                   </div>

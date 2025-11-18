@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Heart, Star, Share2, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice, calculateDiscount } from "@/lib/utils";
 import type { Product } from "@/types";
 import { apiurl } from "@/store/constants";
+
+const PLACEHOLDER_IMAGE = "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop&auto=format";
 
 const REQUIRE_AUTH =
   process.env.NEXT_PUBLIC_REQUIRE_AUTH === "true";
@@ -150,13 +153,13 @@ export function ProductCard({
     <div className={`group relative bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 ${className}`}>
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden bg-gray-100">
-        <img
-          src={product.images[0]?.url || "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop&auto=format"}
+        <Image
+          src={product.images[0]?.url || PLACEHOLDER_IMAGE}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-          onError={(e) => {
-            e.currentTarget.src = "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop&auto=format";
-          }}
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover group-hover:scale-105 transition-transform duration-300"
+          unoptimized
         />
         
         {/* Badges */}
